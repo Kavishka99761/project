@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDU-SMART · Learning Materials</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="es-app">
+    <aside class="es-sidebar" id="esSidebar"></aside>
+    <div class="es-sidebar-backdrop" id="esBackdrop"></div>
+    <div class="es-main">
+      <header class="es-topbar" id="esTopbar"></header>
+      <main class="es-content">
+
+        <section class="es-module-hero hero-bethmi es-fade-in">
+          <div class="es-hero-icon"><i class="bi bi-journal-bookmark-fill"></i></div>
+          <h1>Learning Materials Dashboard</h1>
+          <p>Upload, organise and summarise your lecture notes and documents. Owner: Bethmi.</p>
+        </section>
+
+        <!-- Stats -->
+        <div class="row g-3 mb-3" id="statRow"></div>
+
+        <div class="row g-3">
+          <!-- Documents -->
+          <div class="col-lg-8">
+            <div class="es-card">
+              <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                <div class="es-card-title mb-0 me-auto"><i class="bi bi-folder2-open"></i> My Documents</div>
+                <div style="position:relative;min-width:180px;flex:1">
+                  <i class="bi bi-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--es-text-muted)"></i>
+                  <input class="es-input" id="docSearch" style="padding-left:36px" placeholder="Search documents..." />
+                </div>
+                <select class="es-input" id="docFilter" style="width:auto">
+                  <option value="">All modules</option>
+                </select>
+                <button class="btn-es-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                  <i class="bi bi-cloud-arrow-up me-1"></i> Upload
+                </button>
+              </div>
+              <div class="es-scroll-y" id="docList"></div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="col-lg-4">
+            <div class="es-card mb-3">
+              <div class="es-card-title"><i class="bi bi-collection-fill"></i> My Modules</div>
+              <div id="moduleList"></div>
+            </div>
+
+            <div class="es-card mb-3">
+              <div class="es-card-title"><i class="bi bi-magic"></i> Generate Summary</div>
+              <label class="form-label small fw-semibold text-muted-es">Select document</label>
+              <select class="es-input mb-2" id="sumDoc"></select>
+              <label class="form-label small fw-semibold text-muted-es">Summary length</label>
+              <div class="btn-group w-100 mb-3" role="group" id="sumLen">
+                <input type="radio" class="btn-check" name="sumlen" id="lenShort" value="Short" />
+                <label class="btn btn-es-ghost btn-sm" for="lenShort">Short</label>
+                <input type="radio" class="btn-check" name="sumlen" id="lenMed" value="Medium" checked />
+                <label class="btn btn-es-ghost btn-sm" for="lenMed">Medium</label>
+                <input type="radio" class="btn-check" name="sumlen" id="lenDet" value="Detailed" />
+                <label class="btn btn-es-ghost btn-sm" for="lenDet">Detailed</label>
+              </div>
+              <button class="btn-es-primary w-100" id="genSummary"><i class="bi bi-stars me-1"></i> Generate</button>
+              <div id="sumResult" class="mt-3 d-none"></div>
+            </div>
+
+            <div class="es-card">
+              <div class="es-card-title"><i class="bi bi-journal-check"></i> Saved Summaries</div>
+              <div class="es-scroll-y" id="summaryList"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Upload modal -->
+  <div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:var(--es-surface);color:var(--es-text);border-radius:var(--es-radius);border:1px solid var(--es-border)">
+        <div class="modal-header" style="border-color:var(--es-border)">
+          <h5 class="modal-title fw-bold"><i class="bi bi-cloud-arrow-up me-2" style="color:var(--es-bethmi)"></i>Upload Document</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label small fw-semibold text-muted-es">File (PDF or Word)</label>
+          <input type="file" class="es-input mb-3" id="upFile" accept=".pdf,.doc,.docx,.txt" />
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label small fw-semibold text-muted-es">Title</label>
+              <input class="es-input" id="upTitle" placeholder="e.g. OOP Lecture 06" />
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-muted-es">Module</label>
+              <select class="es-input" id="upModule"></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold text-muted-es">Topic</label>
+              <input class="es-input" id="upTopic" placeholder="e.g. Interfaces" />
+            </div>
+          </div>
+          <div class="form-check form-switch mt-3">
+            <input class="form-check-input" type="checkbox" id="upExtract" checked />
+            <label class="form-check-label small" for="upExtract">Extract text automatically</label>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-color:var(--es-border)">
+          <button class="btn-es-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-es-primary" id="doUpload"><i class="bi bi-upload me-1"></i> Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details modal -->
+  <div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:var(--es-surface);color:var(--es-text);border-radius:var(--es-radius);border:1px solid var(--es-border)">
+        <div class="modal-header" style="border-color:var(--es-border)">
+          <h5 class="modal-title fw-bold" id="detTitle">Document</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/mock-data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/learning.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "EDU-SMART",
+    "slug": "edu-smart-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#6366f1"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "lk.edusmart.mobile"
+    },
+    "android": {
+      "package": "lk.edusmart.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#6366f1"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "apiBase": "http://localhost:8000/api"
+    }
+  }
+}

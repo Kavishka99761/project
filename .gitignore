@@ -1,0 +1,45 @@
+# ------------------------------------------------------------------
+#  EDU-SMART — root ignore
+#  Layer-specific ignores live in frontend-web/, mobile-app/ and
+#  backend-laravel/. This file covers cross-cutting OS/editor noise.
+# ------------------------------------------------------------------
+
+# Dependencies & build output
+node_modules/
+dist/
+dist-verify/
+build/
+.expo/
+vendor/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDEs
+.idea/
+.vscode/*
+!.vscode/settings.json.example
+*.swp
+*.swo
+*~
+
+# Local scratch
+*.tmp
+.cache/
+# Throwaway verification harnesses and their captures (created, run, deleted)
+.verify-*

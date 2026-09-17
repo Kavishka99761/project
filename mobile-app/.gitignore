@@ -1,0 +1,14 @@
+node_modules/
+.expo/
+dist/
+dist-verify/
+web-build/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+.DS_Store
+.env
