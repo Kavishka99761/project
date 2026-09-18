@@ -34,7 +34,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Reset (safe for a demo/dev database).
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        if (DB::getDriverName() === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = OFF');
+        } else {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        }
         foreach ([
             'notifications', 'chat_messages', 'chat_conversations', 'engagement_logs',
             'study_sessions', 'risk_assessments', 'assignments', 'academic_dates',
@@ -43,7 +47,11 @@ class DatabaseSeeder extends Seeder
         ] as $table) {
             DB::table($table)->truncate();
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        if (DB::getDriverName() === 'sqlite') {
+            DB::statement('PRAGMA foreign_keys = ON');
+        } else {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
 
         $summaryGen = app(SummaryGenerator::class);
         $risk = app(RiskCalculator::class);

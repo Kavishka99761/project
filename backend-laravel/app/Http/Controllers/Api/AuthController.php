@@ -75,6 +75,6 @@ class AuthController extends Controller
         $user = $request->user();
         $user->update($data);
 
-        return response()->json($user);
+        return response()->json($user->fresh());
     }
 }

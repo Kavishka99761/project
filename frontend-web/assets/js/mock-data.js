@@ -33,13 +33,13 @@ ES.currentUser = {
 };
 
 ES.modules = [
-  { id: 1, code: "SE201", name: "Software Engineering", color: "bethmi",   icon: "diagram-3" },
-  { id: 2, code: "DB202", name: "Database Systems",     color: "jithmi",   icon: "database" },
-  { id: 3, code: "PR210", name: "Programming (OOP)",    color: "pasindu",  icon: "code-slash" },
-  { id: 4, code: "AI301", name: "AI & Machine Learning",color: "kavishka", icon: "cpu" },
+  { id: 1, code: "SE201", name: "Software Engineering", color: "learning",   icon: "diagram-3" },
+  { id: 2, code: "DB202", name: "Database Systems",     color: "risk",   icon: "database" },
+  { id: 3, code: "PR210", name: "Programming (OOP)",    color: "study",  icon: "code-slash" },
+  { id: 4, code: "AI301", name: "AI & Machine Learning",color: "assistant", icon: "cpu" },
 ];
 
-/* ---------- Bethmi: Learning Materials ----------
+/* ---------- Learning Materials ----------
    Upload/save/session dates are day-offsets from today so "recent" stays recent. */
 ES.documents = [
   { id: 1, title: "OOP Lecture 05 — Inheritance", module: "Programming (OOP)", type: "PDF",  pages: 34, size: "1.8 MB", uploaded: ES.isoDate(-3),  topic: "Inheritance" },
@@ -60,7 +60,7 @@ ES.summaries = [
     text: "Requirements engineering covers elicitation, analysis, specification (SRS), validation and management. Functional requirements describe behaviour; non-functional cover quality attributes like performance and security." },
 ];
 
-/* ---------- Pasindu: Study & Engagement ---------- */
+/* ---------- Study & Engagement ---------- */
 ES.studyToday = { studiedMinutes: 155, targetMinutes: 180 };
 ES.currentSession = { module: "Database Systems", minutes: 42, active: false };
 ES.engagement = { level: "Good", percent: 78, history: [62, 70, 78, 74, 81, 78] };
@@ -74,7 +74,7 @@ ES.sessionHistory = [
   { id: 3, module: "Software Engineering", date: ES.isoDate(-3), planned: 120, actual: 100, engagement: 68 },
 ];
 
-/* ---------- Kavishka: Academic Assistant ---------- */
+/* ---------- Academic Assistant ---------- */
 ES.knowledgeBase = { handbooks: 12, projectDocs: 8, regulations: 6 };
 /* Offsets +2 / +37 / +78 / +88 keep the same spacing the absolute dates had,
    so the month grid and the "in N days" labels never decay. */
@@ -93,7 +93,7 @@ ES.chatSeed = [
   { role: "bot", text: "Hi! I'm your Academic Assistant. Ask me about module handbooks, project guidelines, deadlines or university regulations.", src: "" },
 ];
 
-/* ---------- Jithmi: Assignment & Risk ----------
+/* ---------- Assignment & Risk ----------
    Tuned so the seeded set exercises ALL FOUR risk levels — Critical 90, High 55,
    Medium 40, Low 14. Showing that spread is the whole point of the module.
    Deadlines are date-relative so the demo never decays into "all overdue". */
@@ -116,7 +116,7 @@ ES.fmtDuration = function (minutes) {
   return (h ? h + "h " : "") + (m < 10 && h ? "0" : "") + m + "m";
 };
 
-/* Risk model — mirrors Jithmi's backend RiskCalculator logic */
+/* Risk model — mirrors the backend RiskCalculator logic */
 ES.calcRisk = function (a) {
   const days = Math.max(ES.daysUntil(a.deadline), 0);
   const remainingHours = Math.max(a.estHours - a.doneHours, 0);

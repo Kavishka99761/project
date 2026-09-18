@@ -181,7 +181,7 @@ class StudySessionController extends Controller
             'completion_rate'   => $planned > 0 ? (int) round(($actual / $planned) * 100) : 0,
             'sessions_count'    => $completed->count(),
             'average_engagement' => $avgEngagement,
-            'streak_days'       => $this->streak($user->studySessions()->where('status', 'completed')->pluck('started_at')),
+            'streak_days'       => $this->streak($user->studySessions()->where('status', 'completed')->pluck('started_at')->toArray()),
             'daily_target'      => $user->daily_target_minutes,
         ]);
     }
@@ -206,16 +206,16 @@ class StudySessionController extends Controller
     }
 
     /** Consecutive-day study streak ending today (or yesterday). */
-    private function streak($startedAts): int
+    private function streak(array $startedAts): int
     {
-        $days = $startedAts->map(fn ($d) => Carbon::parse($d)->toDateString())->unique()->sortDesc()->values();
+        $days = collect($startedAts)->map(fn ($d) => \Illuminate\Support\Carbon::parse($d)->toDateString())->unique()->sortDesc()->values();
         if ($days->isEmpty()) {
             return 0;
         }
         $streak = 0;
-        $cursor = Carbon::today();
+        $cursor = \Illuminate\Support\Carbon::today();
         if ($days->first() === $cursor->copy()->subDay()->toDateString()) {
-            $cursor->subDay(); // streak may still be alive from yesterday
+            $cursor->subDay();
         }
         foreach ($days as $day) {
             if ($day === $cursor->toDateString()) {

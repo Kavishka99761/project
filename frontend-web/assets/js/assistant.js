@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Academic Assistant Module (Owner: Kavishka)
+  AcadeAlert — Academic Assistant Module
    RAG-style chatbot over an academic knowledge base, document search,
    academic date extraction and calendar integration.
 
@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  ES.initPage({ active: "assistant.html", title: "Academic Assistant", subtitle: "Chatbot & academic dates · Kavishka", accent: "var(--es-kavishka)" });
+  ES.initPage({ active: "assistant.html", title: "Academic Assistant", subtitle: "Chatbot & academic dates", accent: "var(--es-assistant)" });
 
   const $ = (id) => document.getElementById(id);
 
@@ -97,7 +97,7 @@
   function renderSuggestions() {
     const items = ES.recentQuestions.slice(0, 3);
     $("suggestions").innerHTML = items.map((q) =>
-      `<button class="es-pill bg-soft-kavishka es-suggest" style="cursor:pointer;border:none" data-q="${q.replace(/"/g, "&quot;")}"><i class="bi bi-arrow-repeat"></i> ${q}</button>`
+      `<button class="es-pill bg-soft-assistant es-suggest" style="cursor:pointer;border:none" data-q="${q.replace(/"/g, "&quot;")}"><i class="bi bi-arrow-repeat"></i> ${q}</button>`
     ).join("");
     $("suggestions").querySelectorAll(".es-suggest").forEach((b) => b.addEventListener("click", () => ask(b.dataset.q)));
   }
@@ -107,9 +107,9 @@
     const counts = { Handbook: 0, Project: 0, Regulation: 0 };
     KB.forEach((d) => counts[d.cat]++);
     $("kbStats").innerHTML = [
-      { l: "Module Handbooks", v: ES.knowledgeBase.handbooks, i: "journal-bookmark", c: "bethmi" },
-      { l: "Project Docs", v: ES.knowledgeBase.projectDocs, i: "folder2-open", c: "jithmi" },
-      { l: "Regulations", v: ES.knowledgeBase.regulations, i: "shield-check", c: "pasindu" },
+      { l: "Module Handbooks", v: ES.knowledgeBase.handbooks, i: "journal-bookmark", c: "learning" },
+      { l: "Project Docs", v: ES.knowledgeBase.projectDocs, i: "folder2-open", c: "risk" },
+      { l: "Regulations", v: ES.knowledgeBase.regulations, i: "shield-check", c: "study" },
     ].map((s) => `
       <div class="col-4">
         <div class="es-stat-icon bg-soft-${s.c}" style="width:40px;height:40px;margin:0 auto 6px;border-radius:12px;display:grid;place-items:center"><i class="bi bi-${s.i}"></i></div>
@@ -121,7 +121,7 @@
     const list = KB.filter((d) => !q || d.title.toLowerCase().includes(q) || d.keywords.some((k) => k.includes(q)) || d.cat.toLowerCase().includes(q));
     $("kbList").innerHTML = list.length ? list.map((d) => `
       <div class="es-list-item">
-        <span class="es-li-icon bg-soft-kavishka"><i class="bi bi-file-earmark-text"></i></span>
+        <span class="es-li-icon bg-soft-assistant"><i class="bi bi-file-earmark-text"></i></span>
         <div style="flex:1;min-width:0">
           <div class="es-li-title text-truncate">${d.title}</div>
           <div class="es-li-sub">${d.cat} · ${d.pages} pages · indexed</div>
@@ -138,7 +138,7 @@
   function renderDates() {
     $("dateList").innerHTML = calendar.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).map((d) => `
       <div class="es-list-item">
-        <span class="es-li-icon bg-soft-kavishka"><i class="bi bi-calendar-event"></i></span>
+        <span class="es-li-icon bg-soft-assistant"><i class="bi bi-calendar-event"></i></span>
         <div style="flex:1;min-width:0">
           <div class="es-li-title text-truncate">${d.title}</div>
           <div class="es-li-sub">${new Date(d.date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} · in ${ES.daysUntil(d.date)} days</div>

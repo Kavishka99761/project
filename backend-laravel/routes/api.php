@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\StudySessionController;
 use App\Http\Controllers\Api\SummaryController;
 use Illuminate\Support\Facades\Route;
@@ -88,4 +90,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignments/recommendation', [AssignmentController::class, 'recommendation']);
     Route::post('/assignments/whatif', [AssignmentController::class, 'whatIf']);
     Route::apiResource('assignments', AssignmentController::class);
+
+    // Global Search
+    Route::get('/search', SearchController::class);
+
+    // Data Export & Backup
+    Route::get('/export', [ExportController::class, 'export']);
+    Route::post('/backup/firebase', [ExportController::class, 'backupToFirebase']);
+
+    // Firebase token registration
+    Route::put('/me/firebase-token', function (\Illuminate\Http\Request $req) {
+        $req->validate(['token' => ['required', 'string', 'max:512']]);
+        $req->user()->update(['firebase_token' => $req->string('token')->toString()]);
+        return response()->json(['message' => 'Token registered']);
+    });
+
+    // AI Features (NotebookLM integration)
+    Route::get('/ai/features', [\App\Http\Controllers\Api\AIFeaturesController::class, 'listFeatures']);
+    Route::post('/ai/audio-guide', [\App\Http\Controllers\Api\AIFeaturesController::class, 'generateAudioGuide']);
+    Route::post('/ai/quiz', [\App\Http\Controllers\Api\AIFeaturesController::class, 'generateQuiz']);
+    Route::post('/ai/flashcards', [\App\Http\Controllers\Api\AIFeaturesController::class, 'generateFlashcards']);
+    Route::post('/ai/study-plan', [\App\Http\Controllers\Api\AIFeaturesController::class, 'generateStudyPlan']);
+    Route::post('/ai/concepts', [\App\Http\Controllers\Api\AIFeaturesController::class, 'extractConcepts']);
+    Route::post('/ai/analyze', [\App\Http\Controllers\Api\AIFeaturesController::class, 'analyzeComprehension']);
 });
+

@@ -1,0 +1,4 @@
+{
+  "ignorePaths": ["composer.phar"],
+  "words": ["Acad", "Acade", "AcadeAlert", "Laravel", "xampp", "organise", "summarise", "sumlen", "prioritise"]
+}

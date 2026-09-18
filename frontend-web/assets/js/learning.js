@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Learning Materials Module (Owner: Bethmi)
+  AcadeAlert — Learning Materials Module
    Document management: upload, view, search, filter, rename, delete, details.
    Summary management: generate (short/medium/detailed), keywords, save, download.
    ========================================================================== */
@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  ES.initPage({ active: "learning.html", title: "Learning Materials", subtitle: "Documents & summaries · Bethmi", accent: "var(--es-bethmi)" });
+  ES.initPage({ active: "learning.html", title: "Learning Materials", subtitle: "Documents & summaries", accent: "var(--es-learning)" });
 
   let docs = ES.documents.slice();
   let summaries = ES.summaries.slice();
@@ -16,10 +16,10 @@
   function renderStats() {
     const totalSize = docs.reduce((s, d) => s + parseFloat(d.size) * (d.size.includes("MB") ? 1 : 0.001), 0);
     const stats = [
-      { icon: "file-earmark-text-fill", color: "bethmi", value: docs.length, label: "Documents" },
-      { icon: "collection-fill", color: "kavishka", value: new Set(docs.map((d) => d.module)).size, label: "Modules used" },
-      { icon: "journal-check", color: "pasindu", value: summaries.length, label: "Saved summaries" },
-      { icon: "hdd-fill", color: "jithmi", value: totalSize.toFixed(1) + " MB", label: "Storage" },
+      { icon: "file-earmark-text-fill", color: "learning", value: docs.length, label: "Documents" },
+      { icon: "collection-fill", color: "assistant", value: new Set(docs.map((d) => d.module)).size, label: "Modules used" },
+      { icon: "journal-check", color: "study", value: summaries.length, label: "Saved summaries" },
+      { icon: "hdd-fill", color: "risk", value: totalSize.toFixed(1) + " MB", label: "Storage" },
     ];
     document.getElementById("statRow").innerHTML = stats.map((s) => `
       <div class="col-6 col-xl-3">
@@ -39,7 +39,7 @@
     docs.forEach((d) => { groups[d.module] = (groups[d.module] || 0) + 1; });
     const rows = Object.keys(groups).map((m) => {
       const mod = ES.modules.find((x) => x.name === m);
-      const color = mod ? mod.color : "bethmi";
+      const color = mod ? mod.color : "learning";
       const icon = mod ? mod.icon : "journal";
       return `<div class="es-list-item">
         <span class="es-li-icon bg-soft-${color}"><i class="bi bi-${icon}"></i></span>
@@ -61,7 +61,7 @@
       (!q || d.title.toLowerCase().includes(q) || d.topic.toLowerCase().includes(q) || d.module.toLowerCase().includes(q))
     );
     const typeIcon = (t) => t === "PDF" ? "file-earmark-pdf-fill" : t === "Word" ? "file-earmark-word-fill" : "file-earmark-text-fill";
-    const typeColor = (t) => t === "PDF" ? "danger" : t === "Word" ? "bethmi" : "pasindu";
+    const typeColor = (t) => t === "PDF" ? "danger" : t === "Word" ? "learning" : "study";
 
     document.getElementById("docList").innerHTML = filtered.length ? filtered.map((d) => `
       <div class="es-list-item es-fade-in">
@@ -82,7 +82,7 @@
   function renderSummaries() {
     document.getElementById("summaryList").innerHTML = summaries.length ? summaries.map((s) => `
       <div class="es-list-item es-fade-in">
-        <span class="es-li-icon bg-soft-pasindu"><i class="bi bi-check2-circle"></i></span>
+        <span class="es-li-icon bg-soft-study"><i class="bi bi-check2-circle"></i></span>
         <div style="flex:1;min-width:0">
           <div class="es-li-title text-truncate">${s.title}</div>
           <div class="es-li-sub text-truncate">${s.length} · ${s.keywords.slice(0, 3).join(", ")}</div>
@@ -163,7 +163,7 @@
     if (btn.dataset.sact === "view") {
       document.getElementById("detTitle").textContent = s.title;
       document.getElementById("detBody").innerHTML = `
-        <div class="mb-2">${s.keywords.map((k) => `<span class="es-pill bg-soft-bethmi me-1 mb-1">#${k}</span>`).join("")}</div>
+        <div class="mb-2">${s.keywords.map((k) => `<span class="es-pill bg-soft-learning me-1 mb-1">#${k}</span>`).join("")}</div>
         <p class="small">${s.text}</p>
         <div class="text-muted-es small">Length: ${s.length} · Saved ${s.saved}</div>`;
       new bootstrap.Modal(document.getElementById("detailsModal")).show();
@@ -202,8 +202,8 @@
       box.classList.remove("d-none");
       box.innerHTML = `
         <div class="es-card p-3" style="box-shadow:none;background:var(--es-surface-2)">
-          <div class="fw-bold small mb-1">${summary.title} <span class="es-pill bg-soft-bethmi ms-1">${length}</span></div>
-          <div class="mb-2">${kw.map((k) => `<span class="es-pill bg-soft-pasindu me-1 mb-1">#${k}</span>`).join("")}</div>
+          <div class="fw-bold small mb-1">${summary.title} <span class="es-pill bg-soft-learning ms-1">${length}</span></div>
+          <div class="mb-2">${kw.map((k) => `<span class="es-pill bg-soft-study me-1 mb-1">#${k}</span>`).join("")}</div>
           <p class="small mb-0">${summary.text}</p>
         </div>`;
       btn.innerHTML = '<i class="bi bi-stars me-1"></i> Generate';

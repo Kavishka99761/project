@@ -11,9 +11,9 @@
 
   /* Merge events from every module */
   const events = [];
-  ES.academicDates.forEach((d) => events.push({ date: d.date, title: d.title, kind: "academic", color: "var(--es-kavishka)" }));
-  ES.assignments.forEach((a) => events.push({ date: a.deadline, title: a.title + " (deadline)", kind: "assignment", color: "var(--es-jithmi)" }));
-  ES.sessionHistory.forEach((s) => events.push({ date: s.date, title: "Studied " + s.module, kind: "study", color: "var(--es-pasindu)" }));
+  ES.academicDates.forEach((d) => events.push({ date: d.date, title: d.title, kind: "academic", color: "var(--es-assistant)" }));
+  ES.assignments.forEach((a) => events.push({ date: a.deadline, title: a.title + " (deadline)", kind: "assignment", color: "var(--es-risk)" }));
+  ES.sessionHistory.forEach((s) => events.push({ date: s.date, title: "Studied " + s.module, kind: "study", color: "var(--es-study)" }));
 
   let view = new Date();
   view.setDate(1);

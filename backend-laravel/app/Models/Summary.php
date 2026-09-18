@@ -17,6 +17,12 @@ class Summary extends Model
 
     protected $casts = ['keywords' => 'array'];
 
+    /** Append virtual fields so the frontend receives `text` and `length` aliases. */
+    protected $appends = ['text', 'length'];
+
+    public function getTextAttribute(): string  { return (string) $this->body; }
+    public function getLengthAttribute(): string { return (string) $this->length_type; }
+
     public function user(): BelongsTo     { return $this->belongsTo(User::class); }
     public function document(): BelongsTo { return $this->belongsTo(Document::class); }
 }

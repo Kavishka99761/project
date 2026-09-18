@@ -33,7 +33,9 @@ return new class extends Migration
             $table->longText('content');
             $table->json('keywords')->nullable();
 
-            $table->fullText(['content', 'section']);
+            if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                $table->fullText(['content', 'section']);
+            }
         });
 
         Schema::create('chat_conversations', function (Blueprint $table) {

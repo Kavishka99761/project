@@ -30,12 +30,10 @@ class AssignmentController extends Controller
 
         $payload = $assignments->map(function (Assignment $a) {
             $assessment = $this->risk->assess($a);
-
-            return [
-                'assignment' => $a,
-                'risk'       => $assessment,
-                'status'     => $this->statusOf($a),
-            ];
+            return array_merge($a->toArray(), [
+                'risk'   => $assessment,
+                'status' => $this->statusOf($a),
+            ]);
         });
 
         if ($request->filled('status')) {
@@ -44,8 +42,8 @@ class AssignmentController extends Controller
 
         // Highest risk first, then nearest deadline.
         $payload = $payload->sortBy([
-            fn ($x, $y) => $y['risk']['score'] <=> $x['risk']['score'],
-            fn ($x, $y) => strcmp((string) $x['assignment']->deadline, (string) $y['assignment']->deadline),
+            fn ($x, $y) => ($y['risk']['score'] ?? 0) <=> ($x['risk']['score'] ?? 0),
+            fn ($x, $y) => strcmp((string) ($x['deadline'] ?? ''), (string) ($y['deadline'] ?? '')),
         ])->values();
 
         return response()->json($payload);
@@ -75,12 +73,12 @@ class AssignmentController extends Controller
 
         // Persist the first risk snapshot.
         $assessment = $this->risk->recalculate($assignment);
+        $risk = $this->risk->assess($assignment);
 
-        return response()->json([
-            'assignment' => $assignment->load('module'),
-            'risk'       => $this->risk->assess($assignment),
-            'assessment' => $assessment,
-        ], 201);
+        return response()->json(array_merge(
+            $assignment->load('module')->toArray(),
+            ['risk' => $risk, 'assessment' => $assessment]
+        ), 201);
     }
 
     /** PUT /api/assignments/{assignment} */
@@ -93,12 +91,12 @@ class AssignmentController extends Controller
 
         // Recompute + persist risk whenever workload/progress/deadline changes.
         $assessment = $this->risk->recalculate($assignment);
+        $risk = $this->risk->assess($assignment);
 
-        return response()->json([
-            'assignment' => $assignment->fresh('module'),
-            'risk'       => $this->risk->assess($assignment),
-            'assessment' => $assessment,
-        ]);
+        return response()->json(array_merge(
+            $assignment->fresh('module')->toArray(),
+            ['risk' => $risk, 'assessment' => $assessment]
+        ));
     }
 
     /** DELETE /api/assignments/{assignment} */

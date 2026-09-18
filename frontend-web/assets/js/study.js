@@ -1,12 +1,12 @@
 /* ==========================================================================
-   EDU-SMART — Study & Engagement Module (Owner: Pasindu)
+  AcadeAlert — Study & Engagement Module
    Study timer, engagement tracking, break recommendations, productivity analytics.
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  ES.initPage({ active: "study.html", title: "Study & Engagement", subtitle: "Focus sessions & productivity · Pasindu", accent: "var(--es-pasindu)" });
+  ES.initPage({ active: "study.html", title: "Study & Engagement", subtitle: "Focus sessions & productivity", accent: "var(--es-study)" });
 
   const FOCUS_MINUTES = 25; // one focused study period before a break is suggested
   const RING = 553;         // circumference of the SVG progress ring
@@ -155,11 +155,11 @@
     const actual = ES.sessionHistory.reduce((s, x) => s + x.actual, 0);
     const avgEng = Math.round(ES.sessionHistory.reduce((s, x) => s + x.engagement, 0) / ES.sessionHistory.length);
     const rows = [
-      { label: "Sessions logged", value: ES.sessionHistory.length, icon: "list-check", color: "pasindu" },
-      { label: "Planned time", value: ES.fmtDuration(planned), icon: "calendar-check", color: "bethmi" },
-      { label: "Actual time", value: ES.fmtDuration(actual), icon: "clock-fill", color: "jithmi" },
+      { label: "Sessions logged", value: ES.sessionHistory.length, icon: "list-check", color: "study" },
+      { label: "Planned time", value: ES.fmtDuration(planned), icon: "calendar-check", color: "learning" },
+      { label: "Actual time", value: ES.fmtDuration(actual), icon: "clock-fill", color: "risk" },
       { label: "Adherence", value: Math.round((actual / planned) * 100) + "%", icon: "speedometer2", color: "success" },
-      { label: "Avg engagement", value: avgEng + "%", icon: "activity", color: "kavishka" },
+      { label: "Avg engagement", value: avgEng + "%", icon: "activity", color: "assistant" },
     ];
     $("insights").innerHTML = rows.map((r) => `
       <div class="es-list-item">
@@ -192,7 +192,7 @@
       data: {
         labels: ES.weeklyStudy.map((d) => d.day),
         datasets: [{ label: "Minutes", data: ES.weeklyStudy.map((d) => d.minutes),
-          backgroundColor: css("--es-pasindu"), borderRadius: 8, maxBarThickness: 34 }],
+          backgroundColor: css("--es-study"), borderRadius: 8, maxBarThickness: 34 }],
       },
       options: {
         responsive: true, plugins: { legend: { display: false } },
@@ -203,8 +203,8 @@
     window.engChartInst = new Chart($("engChart"), {
       type: "line",
       data: { labels: ES.engagement.history.map((_, i) => "t" + (i + 1)),
-        datasets: [{ data: ES.engagement.history, borderColor: css("--es-kavishka"),
-          backgroundColor: css("--es-kavishka") + "22", fill: true, tension: 0.4, pointRadius: 2 }] },
+        datasets: [{ data: ES.engagement.history, borderColor: css("--es-assistant"),
+          backgroundColor: css("--es-assistant") + "22", fill: true, tension: 0.4, pointRadius: 2 }] },
       options: { responsive: true, plugins: { legend: { display: false } },
         scales: { y: { min: 0, max: 100, display: false }, x: { display: false } } },
     });

@@ -45,5 +45,5 @@ http.createServer((req, res) => {
     res.end(data);
   });
 }).listen(PORT, () => {
-  console.log(`\n  EDU-SMART web frontend running at  →  http://localhost:${PORT}\n`);
+  console.log(`\n  AcadeAlert web frontend running at  →  http://localhost:${PORT}\n`);
 });

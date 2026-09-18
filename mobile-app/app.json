@@ -14,10 +14,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "lk.edusmart.mobile"
+      "bundleIdentifier": "lk.AcadAlert.mobile"
     },
     "android": {
-      "package": "lk.edusmart.mobile",
+      "package": "lk.AcadAlert.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#6366f1"
       }

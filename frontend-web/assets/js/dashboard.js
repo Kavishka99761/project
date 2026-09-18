@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  ES.initPage({ active: "dashboard.html", title: "Overview", subtitle: "EDU-SMART central hub" });
+  ES.initPage({ active: "dashboard.html", title: "Overview", subtitle: "AcadeAlert central hub" });
 
   /* ---------- Greeting ---------- */
   const hour = new Date().getHours();
@@ -24,16 +24,16 @@
     .sort((x, y) => y.risk.score - x.risk.score)[0];
 
   const cards = [
-    { href: "learning.html", owner: "Bethmi", color: "bethmi", icon: "journal-bookmark-fill",
+    { href: "learning.html", owner: "Learning", color: "learning", icon: "journal-bookmark-fill",
       title: "Learning Materials", stat: ES.documents.length + " documents",
       sub: ES.summaries.length + " saved summaries" },
-    { href: "study.html", owner: "Pasindu", color: "pasindu", icon: "stopwatch-fill",
+    { href: "study.html", owner: "Study", color: "study", icon: "stopwatch-fill",
       title: "Study & Engagement", stat: ES.fmtDuration(ES.studyToday.studiedMinutes),
       sub: "Engagement " + ES.engagement.level },
-    { href: "assistant.html", owner: "Kavishka", color: "kavishka", icon: "robot",
+    { href: "assistant.html", owner: "Assistant", color: "assistant", icon: "robot",
       title: "Academic Assistant", stat: (ES.knowledgeBase.handbooks + ES.knowledgeBase.projectDocs + ES.knowledgeBase.regulations) + " sources",
       sub: ES.academicDates.length + " key dates tracked" },
-    { href: "assignments.html", owner: "Jithmi", color: "jithmi", icon: "clipboard2-pulse-fill",
+    { href: "assignments.html", owner: "Risk", color: "risk", icon: "clipboard2-pulse-fill",
       title: "Assignment Risk", stat: topAssignment.risk.level + " risk",
       sub: topAssignment.a.title },
   ];
@@ -58,16 +58,16 @@
   const remaining = ES.assignments.reduce((s, a) => s + Math.max(a.estHours - a.doneHours, 0), 0);
 
   const glance = [
-    { icon: "stopwatch-fill", color: "pasindu", label: "Study today",
+    { icon: "stopwatch-fill", color: "study", label: "Study today",
       value: ES.fmtDuration(ES.studyToday.studiedMinutes), bar: studyPct,
       note: `${studyPct}% of ${ES.fmtDuration(ES.studyToday.targetMinutes)} target` },
-    { icon: "exclamation-triangle-fill", color: "jithmi", label: "Top priority",
+    { icon: "exclamation-triangle-fill", color: "risk", label: "Top priority",
       value: topAssignment.a.title, bar: topAssignment.a.progress,
       note: `${topAssignment.risk.level} risk · due in ${topAssignment.risk.days} day(s)` },
-    { icon: "hourglass-split", color: "jithmi", label: "Workload left",
+    { icon: "hourglass-split", color: "risk", label: "Workload left",
       value: remaining + " hours", bar: Math.min(100, Math.round((remaining / 40) * 100)),
       note: "Across all active assignments" },
-    { icon: "journal-text", color: "bethmi", label: "Recently added",
+    { icon: "journal-text", color: "learning", label: "Recently added",
       value: ES.documents[0].title, bar: 100, note: ES.documents[0].module },
   ];
 
@@ -88,12 +88,12 @@
 
   /* ---------- Integration flow ---------- */
   const flow = [
-    { m: "Kavishka", c: "kavishka", i: "robot", t: "Extracts deadline", d: "“Assignment deadline = 20 October”" },
-    { m: "Jithmi", c: "jithmi", i: "clipboard2-pulse", t: "Calculates priority", d: "“Priority = Database Project”" },
-    { m: "Pasindu", c: "pasindu", i: "stopwatch", t: "Starts study session", d: "“Recommended task = Database Project”" },
-    { m: "Bethmi", c: "bethmi", i: "journal-bookmark", t: "Provides material", d: "“Study OOP Lecture 05”" },
-    { m: "Pasindu", c: "pasindu", i: "graph-up", t: "Records progress", d: "“Studied Database for 2 hours”" },
-    { m: "Jithmi", c: "jithmi", i: "arrow-repeat", t: "Risk recalculated", d: "Workload & risk updated" },
+    { m: "Assistant", c: "assistant", i: "robot", t: "Extracts deadline", d: "“Assignment deadline = 20 October”" },
+    { m: "Risk", c: "risk", i: "clipboard2-pulse", t: "Calculates priority", d: "“Priority = Database Project”" },
+    { m: "Study", c: "study", i: "stopwatch", t: "Starts study session", d: "“Recommended task = Database Project”" },
+    { m: "Learning", c: "learning", i: "journal-bookmark", t: "Provides material", d: "“Study OOP Lecture 05”" },
+    { m: "Study", c: "study", i: "graph-up", t: "Records progress", d: "“Studied Database for 2 hours”" },
+    { m: "Risk", c: "risk", i: "arrow-repeat", t: "Risk recalculated", d: "Workload & risk updated" },
   ];
   document.getElementById("integrationFlow").innerHTML = `
     <div class="d-flex flex-wrap align-items-stretch gap-2">
@@ -113,12 +113,12 @@
     <p class="text-muted-es small mt-3 mb-0"><i class="bi bi-info-circle me-1"></i>
       The four dashboards stay separate internally and exchange data through the Laravel API — the student experiences one system.</p>`;
 
-  /* ---------- Upcoming academic dates (from Kavishka) ---------- */
+  /* ---------- Upcoming academic dates ---------- */
   const upcoming = ES.academicDates.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 4);
   document.getElementById("upcomingDates").innerHTML = upcoming.map((d) => {
     const days = ES.daysUntil(d.date);
     return `<div class="es-list-item">
-      <span class="es-li-icon bg-soft-kavishka"><i class="bi bi-calendar-event"></i></span>
+      <span class="es-li-icon bg-soft-assistant"><i class="bi bi-calendar-event"></i></span>
       <div style="min-width:0;flex:1">
         <div class="es-li-title text-truncate">${d.title}</div>
         <div class="es-li-sub">${new Date(d.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} · ${d.type}</div>
@@ -130,13 +130,13 @@
   /* ---------- Smart notifications (cross-module) ---------- */
   const notifs = [];
   if (topAssignment.risk.level === "Critical" || topAssignment.risk.level === "High") {
-    notifs.push({ i: "exclamation-triangle-fill", c: "jithmi", t: `${topAssignment.a.title} is ${topAssignment.risk.level} risk`, s: topAssignment.risk.reasons[0] });
+    notifs.push({ i: "exclamation-triangle-fill", c: "risk", t: `${topAssignment.a.title} is ${topAssignment.risk.level} risk`, s: topAssignment.risk.reasons[0] });
   }
   if (studyPct < 100) {
-    notifs.push({ i: "stopwatch-fill", c: "pasindu", t: `Keep going — ${ES.fmtDuration(ES.studyToday.targetMinutes - ES.studyToday.studiedMinutes)} to hit today's target`, s: "Study & Engagement" });
+    notifs.push({ i: "stopwatch-fill", c: "study", t: `Keep going — ${ES.fmtDuration(ES.studyToday.targetMinutes - ES.studyToday.studiedMinutes)} to hit today's target`, s: "Study & Engagement" });
   }
-  notifs.push({ i: "robot", c: "kavishka", t: `Proposal submission in ${ES.daysUntil("2026-09-15")} days`, s: "Academic Assistant" });
-  notifs.push({ i: "journal-bookmark-fill", c: "bethmi", t: "New summary ready: " + ES.summaries[0].title, s: "Learning Materials" });
+  notifs.push({ i: "robot", c: "assistant", t: `Proposal submission in ${ES.daysUntil("2026-09-15")} days`, s: "Academic Assistant" });
+  notifs.push({ i: "journal-bookmark-fill", c: "learning", t: "New summary ready: " + ES.summaries[0].title, s: "Learning Materials" });
 
   document.getElementById("notifList").innerHTML = notifs.map((n) => `
     <div class="es-list-item">

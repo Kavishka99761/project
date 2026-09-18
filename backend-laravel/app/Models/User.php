@@ -17,7 +17,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'password', 'program',
-        'academic_year', 'dark_mode', 'daily_target_minutes',
+        'academic_year', 'dark_mode', 'daily_target_minutes', 'firebase_token',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -38,4 +38,5 @@ class User extends Authenticatable
     public function academicDocuments(): HasMany { return $this->hasMany(AcademicDocument::class); } // Kavishka
     public function academicDates(): HasMany     { return $this->hasMany(AcademicDate::class); }     // Kavishka
     public function conversations(): HasMany     { return $this->hasMany(ChatConversation::class); } // Kavishka
+    public function notifications(): HasMany     { return $this->hasMany(Notification::class); }      // Common
 }

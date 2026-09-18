@@ -1,14 +1,14 @@
 /* ==========================================================================
-   EDU-SMART — Assignment & Deadline Risk Module (Owner: Jithmi)
+  AcadeAlert — Assignment & Deadline Risk Module
    Assignment CRUD, workload analysis, risk prediction & explanation,
    priority ranking, daily-hours recommendation and what-if scenarios.
-   Integration: consumes study capacity from Pasindu's productivity data.
+  Integration: consumes study capacity from the Study & Engagement module.
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  ES.initPage({ active: "assignments.html", title: "Assignment Risk", subtitle: "Deadlines, workload & risk · Jithmi", accent: "var(--es-jithmi)" });
+  ES.initPage({ active: "assignments.html", title: "Assignment Risk", subtitle: "Deadlines, workload & risk", accent: "var(--es-risk)" });
 
   const $ = (id) => document.getElementById(id);
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -24,7 +24,7 @@
   function activeItems() { return items.filter((a) => !a.completed); }
   function withRisk() { return activeItems().map((a) => ({ a, r: ES.calcRisk(a) })); }
 
-  // Available study time comes from Pasindu's weekly productivity (integration point)
+  // Available study time comes from the Study & Engagement module (integration point)
   function weeklyCapacityHours() {
     const total = ES.weeklyStudy.reduce((s, d) => s + d.minutes, 0);
     return +(total / 60).toFixed(1);
@@ -48,9 +48,9 @@
     const status = overallStatus();
     const upcomingCount = activeItems().filter((a) => ES.daysUntil(a.deadline) >= 0).length;
     const stats = [
-      { icon: "shield-exclamation", color: status.level === "Low" ? "success" : "jithmi", value: status.text, label: "Overall workload status" },
+      { icon: "shield-exclamation", color: status.level === "Low" ? "success" : "risk", value: status.text, label: "Overall workload status" },
       { icon: "fire", color: "danger", value: top ? top.a.title : "—", label: "Today's top priority", small: true },
-      { icon: "calendar-x", color: "jithmi", value: upcomingCount, label: "Upcoming deadlines" },
+      { icon: "calendar-x", color: "risk", value: upcomingCount, label: "Upcoming deadlines" },
       { icon: "hourglass-split", color: "warning", value: remainingWorkload() + "h", label: "Remaining workload" },
     ];
     $("statRow").innerHTML = stats.map((s) => `
@@ -120,16 +120,16 @@
     const gap = rem - cap;
     $("workloadBox").innerHTML = `
       <div class="d-flex justify-content-between mb-2"><span class="text-muted-es small">Remaining workload</span><span class="fw-bold">${rem}h</span></div>
-      <div class="es-progress mb-3"><span style="width:${Math.min(100, (rem / Math.max(cap, 1)) * 50)}%;background:var(--es-jithmi)"></span></div>
+      <div class="es-progress mb-3"><span style="width:${Math.min(100, (rem / Math.max(cap, 1)) * 50)}%;background:var(--es-risk)"></span></div>
       <div class="d-flex justify-content-between mb-2"><span class="text-muted-es small">Available this week</span><span class="fw-bold">${cap}h</span></div>
-      <div class="es-progress mb-3"><span style="width:100%;background:var(--es-pasindu)"></span></div>
+      <div class="es-progress mb-3"><span style="width:100%;background:var(--es-study)"></span></div>
       <div class="d-flex justify-content-between align-items-center">
         <span class="text-muted-es small">Status</span>
         <span class="es-pill ${RISK_CLASS[st.level]}">${st.level === "Low" ? "🟢" : st.level === "Medium" ? "🟡" : "🔴"} ${st.text}</span>
       </div>
       <p class="text-muted-es small mt-2 mb-0">${gap > 0 ? `You need ~${gap.toFixed(1)}h more than your usual weekly capacity. Consider starting early or extending study time.` : "Your workload fits within your normal weekly study capacity."}</p>
       <div class="es-divider"></div>
-      <div class="text-muted-es" style="font-size:.72rem"><i class="bi bi-link-45deg me-1"></i>Available time synced from Pasindu's Study &amp; Productivity module.</div>`;
+      <div class="text-muted-es" style="font-size:.72rem"><i class="bi bi-link-45deg me-1"></i>Available time synced from the Study &amp; Engagement module.</div>`;
   }
 
   /* ---------- Recommendation ---------- */
@@ -140,11 +140,11 @@
     const { a, r } = top;
     const perDay = r.days > 0 ? ((a.estHours - a.doneHours) / r.days) : (a.estHours - a.doneHours);
     $("recommendBox").innerHTML = `
-      <div class="fw-bold mb-1"><i class="bi bi-arrow-right-circle-fill me-1" style="color:var(--es-jithmi)"></i>Work on: ${a.title}</div>
-      <p class="small text-muted-es mb-2">Study approximately <strong style="color:var(--es-jithmi)">${Math.max(perDay, 0.5).toFixed(1)} hours/day</strong> to finish before the deadline.</p>
+      <div class="fw-bold mb-1"><i class="bi bi-arrow-right-circle-fill me-1" style="color:var(--es-risk)"></i>Work on: ${a.title}</div>
+      <p class="small text-muted-es mb-2">Study approximately <strong style="color:var(--es-risk)">${Math.max(perDay, 0.5).toFixed(1)} hours/day</strong> to finish before the deadline.</p>
       <div class="mb-2">${r.reasons.map((x) => `<div class="small"><i class="bi bi-dot"></i>${x}</div>`).join("")}</div>
       <button class="btn-es-ghost btn-sm w-100" id="startStudy"><i class="bi bi-stopwatch me-1"></i>Start study session</button>
-      <div class="text-muted-es mt-2" style="font-size:.72rem"><i class="bi bi-link-45deg me-1"></i>Hands off to Pasindu's Study module.</div>`;
+      <div class="text-muted-es mt-2" style="font-size:.72rem"><i class="bi bi-link-45deg me-1"></i>Hands off to the Study &amp; Engagement module.</div>`;
     $("startStudy").addEventListener("click", () => { ES.toast("Recommended task sent to Study module", "info"); setTimeout(() => location.href = "study.html", 700); });
   }
 
@@ -191,8 +191,8 @@
   function openModal(a) {
     fillModules();
     $("assignModalTitle").innerHTML = a
-      ? '<i class="bi bi-pencil-square me-2" style="color:var(--es-jithmi)"></i>Edit Assignment'
-      : '<i class="bi bi-clipboard-plus me-2" style="color:var(--es-jithmi)"></i>Add Assignment';
+      ? '<i class="bi bi-pencil-square me-2" style="color:var(--es-risk)"></i>Edit Assignment'
+      : '<i class="bi bi-clipboard-plus me-2" style="color:var(--es-risk)"></i>Add Assignment';
     $("aId").value = a ? a.id : "";
     $("aTitle").value = a ? a.title : "";
     $("aModule").value = a ? a.module : ES.modules[0].name;

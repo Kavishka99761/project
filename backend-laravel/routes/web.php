@@ -17,7 +17,7 @@ Route::get('/', fn () => response()->json([
         'dashboard' => ['GET /api/dashboard', 'GET /api/calendar'],
         'bethmi'    => ['GET|POST /api/documents', 'POST /api/documents/{id}/summaries', 'GET /api/summaries'],
         'pasindu'   => ['GET|POST /api/study/sessions', 'GET /api/study/analytics', 'GET /api/study/current'],
-        'kavishka'  => ['POST /api/assistant/chat', 'GET /api/assistant/knowledge', 'GET /api/assistant/dates'],
+        'kavishka'  => ['GET /api/assistant/chat', 'GET /api/assistant/knowledge', 'GET /api/assistant/dates'],
         'jithmi'    => ['GET|POST /api/assignments', 'GET /api/assignments/rank', 'GET /api/assignments/recommendation', 'POST /api/assignments/whatif'],
     ],
 ]));

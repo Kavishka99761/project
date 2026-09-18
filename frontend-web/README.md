@@ -1,6 +1,6 @@
-# EDU-SMART · Web Frontend
+# AcadeAlert · Web Frontend
 
-Bootstrap 5 client for the EDU-SMART academic platform. **No build step** — plain
+Bootstrap 5 client for the AcadeAlert academic platform. **No build step** — plain
 HTML, CSS and JavaScript served as static files.
 
 ```bash
@@ -22,11 +22,11 @@ Full instructions: [`../docs/SETUP-WEB.md`](../docs/SETUP-WEB.md)
 | ---- | ------ | -------- |
 | `index.html` | Common | Login |
 | `dashboard.html` | Common | Overview hub — day at a glance across all four modules |
-| `learning.html` | **Bethmi** | Documents, search/filter, summaries, keywords |
-| `study.html` | **Pasindu** | Focus timer, engagement, weekly analytics, streak |
-| `assistant.html` | **Kavishka** | RAG chatbot with source citations, academic dates |
-| `assignments.html` | **Jithmi** | Risk ranking, reasons, recommendation, what-if simulator |
-| `calendar.html` | Common | Merged Kavishka dates + Jithmi deadlines |
+| `learning.html` | **Learning Materials** | Documents, search/filter, summaries, keywords |
+| `study.html` | **Study & Engagement** | Focus timer, engagement, weekly analytics, streak |
+| `assistant.html` | **Academic Assistant** | RAG chatbot with source citations, academic dates |
+| `assignments.html` | **Assignment Risk** | Risk ranking, reasons, recommendation, what-if simulator |
+| `calendar.html` | Common | Merged academic dates and assignment deadlines |
 | `profile.html` | Common | Profile, daily target, theme toggle |
 
 ---
@@ -43,10 +43,10 @@ frontend-web/
       ├─ mock-data.js            # ES namespace — datasets + calcRisk + formatters
       ├─ app.js                  # shared shell: nav, auth guard, theme, toasts
       ├─ dashboard.js · calendar.js · profile.js
-      ├─ learning.js             # Bethmi
-      ├─ study.js                # Pasindu
-      ├─ assistant.js            # Kavishka (includes the retrieval scorer)
-      └─ assignments.js          # Jithmi
+      ├─ learning.js             # Learning materials
+      ├─ study.js                # Study and engagement
+      ├─ assistant.js            # Academic assistant and retrieval scorer
+      └─ assignments.js          # Assignment risk
 ```
 
 **One JS file per page.** `mock-data.js` and `app.js` load first on every page; the
@@ -90,10 +90,10 @@ Kept in sync with `mobile-app/src/theme.js` so both clients feel like one produc
 | Module | Hex |
 | ------ | --- |
 | Common / primary | `#6366f1` |
-| Bethmi | `#3b82f6` |
-| Pasindu | `#14b8a6` |
-| Kavishka | `#8b5cf6` |
-| Jithmi | `#f97316` |
+| Learning Materials | `#3b82f6` |
+| Study & Engagement | `#14b8a6` |
+| Academic Assistant | `#8b5cf6` |
+| Assignment Risk | `#f97316` |
 
 Risk levels: Low `#22c55e` · Medium `#eab308` · High `#f97316` · Critical `#ef4444`
 

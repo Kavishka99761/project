@@ -30,11 +30,11 @@ class DocumentController extends Controller
             $query->where('type', $request->string('type'));
         }
         if ($request->filled('q')) {
-            $term = $request->string('q')->toString();
+            $term = '%'.$request->string('q')->toString().'%';
             $query->where(function ($q) use ($term) {
-                $q->where('title', 'like', "%{$term}%")
-                    ->orWhere('topic', 'like', "%{$term}%")
-                    ->orWhere('extracted_text', 'like', "%{$term}%");
+                $q->where('title', 'like', $term)
+                    ->orWhere('topic', 'like', $term)
+                    ->orWhere('extracted_text', 'like', $term);
             });
         }
 

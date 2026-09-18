@@ -44,8 +44,12 @@ class SummaryController extends Controller
 
         $data = $request->validate([
             'length_type' => ['nullable', 'in:Short,Medium,Detailed'],
+            'length'      => ['nullable', 'in:Short,Medium,Detailed'],
             'title'       => ['nullable', 'string', 'max:200'],
         ]);
+
+        // Accept either 'length_type' (API standard) or 'length' (frontend shorthand)
+        $lengthType = $data['length_type'] ?? $data['length'] ?? 'Medium';
 
         $text = trim((string) $document->extracted_text);
         if ($text === '') {
@@ -54,7 +58,7 @@ class SummaryController extends Controller
             ], 422);
         }
 
-        $result = $this->generator->generate($text, $data['length_type'] ?? 'Medium', $data['title'] ?? null);
+        $result = $this->generator->generate($text, $lengthType, $data['title'] ?? null);
 
         $summary = $request->user()->summaries()->create([
             'document_id' => $document->id,

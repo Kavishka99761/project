@@ -74,21 +74,62 @@ class DashboardController extends Controller
             'overdue'     => $active->filter(fn ($a) => Carbon::parse($a->deadline)->isPast())->count(),
         ];
 
+        // Top assignments with risk for the dashboard priority list
+        $topAssignments = $active->map(function ($a) {
+            $r = $this->risk->assess($a);
+            return [
+                'id'       => $a->id,
+                'title'    => $a->title,
+                'module'   => $a->module ? ['name' => $a->module->name] : null,
+                'deadline' => $a->deadline ? Carbon::parse($a->deadline)->toDateString() : null,
+                'progress' => (int) $a->progress,
+                'risk'     => ['level' => $r['level'], 'score' => $r['score']],
+            ];
+        })->sortByDesc(fn ($x) => $x['risk']['score'])->values()->take(4);
+
+        // Streak calculation
+        $allSessionDates = $user->studySessions()
+            ->where('status', 'completed')
+            ->pluck('started_at')
+            ->map(fn ($d) => Carbon::parse($d)->toDateString())
+            ->unique()->sortDesc()->values();
+        $streak = 0;
+        $cursor = Carbon::today();
+        foreach ($allSessionDates as $day) {
+            if ($day === $cursor->toDateString()) { $streak++; $cursor->subDay(); }
+            elseif ($day < $cursor->toDateString()) { break; }
+        }
+
+        // Highest risk score across active assignments
+        $topRiskScore = $active->map(fn ($a) => $this->risk->assess($a)['score'])->max() ?? 0;
+
         return response()->json([
-            'greeting'          => $this->greeting(),
-            'user'              => $user->only(['id', 'name', 'email', 'program', 'daily_target_minutes', 'dark_mode']),
-            'modules'           => $user->modules()->orderBy('code')->get(),
-            'study_today'       => [
-                'minutes'         => $studiedToday,
-                'target'          => $user->daily_target_minutes,
-                'percent'         => $user->daily_target_minutes > 0 ? (int) min(100, round(($studiedToday / $user->daily_target_minutes) * 100)) : 0,
+            // Flat fields the React dashboard expects
+            'documents_count'        => $counts['documents'],
+            'active_assignments'     => $counts['assignments'],
+            'risk_score'             => (int) $topRiskScore,
+            'upcoming_dates'         => $dates->count(),
+            'streak_days'            => $streak,
+            'sessions_today'         => $todaySessions->where('status', 'completed')->count(),
+            'studied_today_minutes'  => $studiedToday,
+            'daily_target_minutes'   => (int) $user->daily_target_minutes,
+            'top_assignments'        => $topAssignments->values(),
+            'upcoming_events'        => $dates->values(),
+            // Detailed sub-objects (used by other consumers)
+            'greeting'               => $this->greeting(),
+            'user'                   => $user->only(['id', 'name', 'email', 'program', 'daily_target_minutes', 'dark_mode']),
+            'modules'                => $user->modules()->orderBy('code')->get(),
+            'study_today'            => [
+                'minutes'            => $studiedToday,
+                'target'             => $user->daily_target_minutes,
+                'percent'            => $user->daily_target_minutes > 0 ? (int) min(100, round(($studiedToday / $user->daily_target_minutes) * 100)) : 0,
                 'average_engagement' => $avgEngagement,
-                'active_session'  => $activeSession,
+                'active_session'     => $activeSession,
             ],
-            'risk_summary'      => $riskCounts,
-            'upcoming_deadlines' => array_slice($upcomingDeadlines, 0, 5),
-            'academic_dates'    => $dates,
-            'counts'            => $counts,
+            'risk_summary'           => $riskCounts,
+            'upcoming_deadlines'     => array_slice($upcomingDeadlines, 0, 5),
+            'academic_dates'         => $dates,
+            'counts'                 => $counts,
         ]);
     }
 

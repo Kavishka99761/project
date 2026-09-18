@@ -1,11 +1,11 @@
-# EDU-SMART
+# AcadeAlert
 
 A full-stack academic productivity platform for university students, built as four
 independently-owned modules on top of one shared platform layer.
 
 | Layer      | Technology                          | Location          | Status                    |
 | ---------- | ----------------------------------- | ----------------- | ------------------------- |
-| Web        | HTML · CSS · JavaScript · Bootstrap | `frontend-web/`   | ✅ Runs standalone         |
+| Web        | React · Material UI · Vite | `frontend-react/` | ✅ Component client; static prototype remains in `frontend-web/` |
 | Mobile     | React Native · Expo SDK 51          | `mobile-app/`     | ✅ Bundles (822 modules)   |
 | Backend    | Laravel 11 · Sanctum                | `backend-laravel/`| ✅ Complete, needs PHP 8.2 |
 | Database   | MySQL 8 · SQL schema + migrations   | `backend-laravel/database/` | ✅ 16 tables + view |
@@ -20,26 +20,37 @@ each other's functionality — that keeps ownership boundaries clean.
 
 | Module | Owner | Responsibility | Accent |
 | ------ | ----- | -------------- | ------ |
-| **Smart Notes & Document Management** | Bethmi | Upload learning materials, extract text, search, generate Short/Medium/Detailed revision summaries + keywords | `#3b82f6` |
-| **Study Session & Engagement** | Pasindu | Focus timer, engagement monitoring, weekly analytics, streaks, planned-vs-actual | `#14b8a6` |
-| **AI Academic Assistant** | Kavishka | RAG chatbot over indexed handbooks/guidelines, answers cite document + section + page; extracts academic dates | `#8b5cf6` |
-| **Assignment & Deadline Risk** | Jithmi | Risk scoring (0–100 → Low/Medium/High/Critical), urgency ranking, daily study plan, what-if simulator | `#f97316` |
+| **Smart Notes & Document Management** | Learning Materials | Upload learning materials, extract text, search, generate Short/Medium/Detailed revision summaries + keywords | `#3b82f6` |
+| **Study Session & Engagement** | Study & Engagement | Focus timer, engagement monitoring, weekly analytics, streaks, planned-vs-actual | `#14b8a6` |
+| **AI Academic Assistant** | Academic Assistant | RAG chatbot over indexed handbooks/guidelines, answers cite document + section + page; extracts academic dates | `#8b5cf6` |
+| **Assignment & Deadline Risk** | Assignment Risk | Risk scoring (0–100 → Low/Medium/High/Critical), urgency ranking, daily study plan, what-if simulator | `#f97316` |
 | *Common Platform Layer* | shared | Auth, profile, modules, navigation, notifications, calendar, overview hub | `#6366f1` |
 
 ### Integration points
 
 ```
-Bethmi  ──document text──▶  Kavishka (grounds its answers in Bethmi's corpus)
-Kavishka ──academic dates──▶ Jithmi + Common calendar (merged event feed)
-Jithmi  ──urgent task──▶    Pasindu ("Start study session")
-Pasindu ──minutes studied──▶ Jithmi (advances done_hours / progress on stop)
+Learning Materials ──document text──▶ Academic Assistant (grounds its answers in the learning corpus)
+Academic Assistant ──academic dates──▶ Assignment Risk + Common calendar (merged event feed)
+Assignment Risk ──urgent task──▶ Study & Engagement ("Start study session")
+Study & Engagement ──minutes studied──▶ Assignment Risk (advances done_hours / progress on stop)
 ```
 
 ---
 
 ## Fastest way to see it working
 
-### 1. Web frontend — no install required
+### 1. React + Material UI web frontend
+
+The primary component-based web client is in `frontend-react/`:
+
+```bash
+cd frontend-react
+npm install
+npm run dev
+# → http://localhost:5173
+```
+
+### 2. Static web prototype — no install required
 
 Only Node.js is needed (a zero-dependency static server is included):
 
@@ -53,7 +64,7 @@ Sign in with **student@edusmart.lk** / **password** (or any credentials — the 
 app runs entirely on bundled mock data, so every module dashboard is fully
 interactive without a backend).
 
-### 2. Mobile app — no backend required
+### 3. Mobile app — no backend required
 
 ```bash
 cd mobile-app
@@ -66,7 +77,7 @@ not running it automatically signs in as the demo student and renders the bundle
 dataset. The header badge tells you which mode you are in (`Live API` vs
 `Offline demo`).
 
-### 3. Backend + database
+### 4. Backend + database
 
 Requires **PHP 8.2+**, **Composer** and **MySQL 8**. Full instructions:
 [`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md).
@@ -102,7 +113,12 @@ Each layer also has its own README: [`frontend-web/`](frontend-web/),
 
 ```
 project/
-├─ frontend-web/           # Bootstrap web client (8 pages)
+├─ frontend-react/         # React + Material UI web client
+│  ├─ src/App.jsx          # Shared application shell and module views
+│  ├─ src/mockData.js       # Demo data and risk helpers
+│  └─ src/theme.js          # Material UI theme
+│
+├─ frontend-web/           # Static Bootstrap prototype (8 pages)
 │  ├─ index.html           # login
 │  ├─ dashboard.html       # Common — overview hub
 │  ├─ learning.html        # Bethmi

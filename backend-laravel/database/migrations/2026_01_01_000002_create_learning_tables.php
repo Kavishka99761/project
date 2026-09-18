@@ -26,7 +26,9 @@ return new class extends Migration
             $table->longText('extracted_text')->nullable();
             $table->timestamps();
 
-            $table->fullText(['title', 'topic', 'extracted_text']);
+            if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                $table->fullText(['title', 'topic', 'extracted_text']);
+            }
         });
 
         Schema::create('summaries', function (Blueprint $table) {

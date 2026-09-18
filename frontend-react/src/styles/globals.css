@@ -1,0 +1,336 @@
+/* ============================================================
+   AcadeAlert – Global Styles
+   Complements the MUI theme with custom utilities, animations,
+   glassmorphism effects, and page transition keyframes.
+   ============================================================ */
+
+/* ─── Google Fonts ───────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ─── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --indigo:       #6366f1;
+  --violet:       #8b5cf6;
+  --teal:         #14b8a6;
+  --amber:        #f59e0b;
+  --rose:         #f43f5e;
+  --green:        #22c55e;
+  --orange:       #f97316;
+
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    24px;
+
+  --shadow-sm:    0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:    0 8px 32px rgba(0,0,0,0.12);
+  --shadow-glow:  0 0 24px rgba(99,102,241,0.25);
+
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast:  150ms;
+  --duration-base:  250ms;
+  --duration-slow:  400ms;
+}
+
+/* ─── Reset & Base ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar         { width: 6px; height: 6px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   {
+  background:    rgba(148, 163, 184, 0.4);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.7); }
+
+/* ─── Keyframe Animations ───────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  80%  { transform: scale(1.6); opacity: 0;   }
+  100% { transform: scale(1.6); opacity: 0;   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes timerTick {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0);     }
+}
+
+/* ─── Page Entrance Animation ───────────────────────────────── */
+.page-enter {
+  animation: fadeInUp var(--duration-slow) var(--ease-out) both;
+}
+
+/* ─── Glassmorphism ─────────────────────────────────────────── */
+.glass {
+  background:     rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+[data-theme='dark'] .glass {
+  background:     rgba(17, 24, 39, 0.75);
+  border-color:   rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Gradient Backgrounds ──────────────────────────────────── */
+.gradient-hero {
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 50%, #3b82f6 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.gradient-teal {
+  background: linear-gradient(135deg, var(--teal) 0%, #0ea5e9 100%);
+}
+
+.gradient-amber {
+  background: linear-gradient(135deg, var(--amber) 0%, var(--orange) 100%);
+}
+
+.gradient-rose {
+  background: linear-gradient(135deg, var(--rose) 0%, var(--orange) 100%);
+}
+
+/* ─── Risk Badges ───────────────────────────────────────────── */
+.risk-badge {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        2px 10px;
+  border-radius:  99px;
+  font-size:      0.72rem;
+  font-weight:    700;
+  letter-spacing: 0.02em;
+  white-space:    nowrap;
+}
+
+/* ─── Study Timer ───────────────────────────────────────────── */
+.timer-display {
+  font-family:   'JetBrains Mono', monospace;
+  font-size:     clamp(2rem, 5vw, 3.5rem);
+  font-weight:   600;
+  letter-spacing: -0.02em;
+  line-height:    1;
+}
+
+.timer-running .timer-display {
+  animation: timerTick 1s ease-in-out infinite;
+}
+
+/* ─── Circular Progress ─────────────────────────────────────── */
+.circular-progress-track {
+  stroke: rgba(148, 163, 184, 0.2);
+}
+.circular-progress-fill {
+  stroke-linecap: round;
+  transition:     stroke-dashoffset 0.5s var(--ease-out);
+}
+
+/* ─── Notification Badge Pulse ──────────────────────────────── */
+.notif-pulse::before {
+  content:    '';
+  position:   absolute;
+  inset:      -2px;
+  border-radius: 50%;
+  background: var(--rose);
+  animation:  pulse-ring 2s ease-out infinite;
+  z-index:    -1;
+}
+
+/* ─── Skeleton Loading ──────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(148,163,184,0.1) 25%,
+    rgba(148,163,184,0.22) 50%,
+    rgba(148,163,184,0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Chat Bubbles ──────────────────────────────────────────── */
+.chat-bubble-user {
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color:       #fff;
+  border-radius: 18px 18px 4px 18px;
+  padding:     10px 16px;
+  max-width:   80%;
+  align-self:  flex-end;
+  animation:   fadeInUp 0.25s var(--ease-out);
+}
+
+.chat-bubble-bot {
+  border-radius: 18px 18px 18px 4px;
+  padding:     10px 16px;
+  max-width:   80%;
+  align-self:  flex-start;
+  animation:   fadeInUp 0.25s var(--ease-out);
+}
+
+/* ─── File Upload Drop Zone ─────────────────────────────────── */
+.dropzone {
+  border:        2px dashed rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-lg);
+  transition:    all var(--duration-base) var(--ease-out);
+  cursor:        pointer;
+}
+.dropzone:hover,
+.dropzone.active {
+  border-color:  var(--indigo);
+  background:    rgba(99, 102, 241, 0.04);
+  transform:     scale(1.01);
+}
+
+/* ─── Sidebar nav item active indicator ─────────────────────── */
+.nav-item-active {
+  position: relative;
+}
+.nav-item-active::before {
+  content:       '';
+  position:      absolute;
+  left:          0;
+  top:           50%;
+  transform:     translateY(-50%);
+  width:         3px;
+  height:        60%;
+  border-radius: 0 4px 4px 0;
+  background:    var(--indigo);
+}
+
+/* ─── Progress bar shimmer variant ──────────────────────────── */
+.progress-shimmer .MuiLinearProgress-bar {
+  background: linear-gradient(90deg,
+    var(--indigo) 0%,
+    var(--violet) 50%,
+    var(--indigo) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ─── Dark mode overrides ───────────────────────────────────── */
+[data-theme='dark'] .gradient-hero {
+  opacity: 0.9;
+}
+
+/* ─── Login page ────────────────────────────────────────────── */
+.login-wrap {
+  min-height: 100vh;
+  display:    flex;
+  align-items: center;
+  justify-content: center;
+  padding:    24px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background-size: 200% 200%;
+  animation:  gradientShift 12s ease infinite;
+}
+
+.login-card {
+  width:         100%;
+  max-width:     880px;
+  border-radius: var(--radius-xl);
+  overflow:      hidden;
+  box-shadow:    0 32px 80px rgba(0,0,0,0.4);
+  animation:     scaleIn 0.5s var(--ease-spring);
+}
+
+.login-hero {
+  padding:    48px;
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
+  color:      #fff;
+  display:    flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-form {
+  padding:    48px;
+  background: #fff;
+}
+
+[data-theme='dark'] .login-form {
+  background: #111827;
+  color: #f1f5f9;
+}
+
+/* ─── Utility classes ───────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-hover-lift {
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s ease;
+}
+.card-hover-lift:hover {
+  transform:  translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.animate-fadeInUp  { animation: fadeInUp  0.4s var(--ease-out) both; }
+.animate-fadeIn    { animation: fadeIn    0.3s ease both; }
+.animate-scaleIn   { animation: scaleIn  0.35s var(--ease-spring) both; }
+.animate-slideDown { animation: slideDown 0.3s var(--ease-out) both; }

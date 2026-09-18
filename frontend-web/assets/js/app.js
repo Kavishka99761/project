@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — App Shell
+   AcadeAlert — App Shell
    Renders the shared sidebar + topbar, handles theming (light/dark),
    mobile navigation, auth guard and logout. Included on every dashboard page.
    ========================================================================== */
@@ -48,10 +48,10 @@
   /* ---------- Navigation config ---------- */
   ES.NAV = [
     { href: "dashboard.html",   label: "Overview",            icon: "grid-1x2",        group: "main" },
-    { href: "learning.html",    label: "Learning Materials",  icon: "journal-bookmark", group: "main", mod: "bethmi",   dot: "var(--es-bethmi)" },
-    { href: "study.html",       label: "Study & Engagement",  icon: "stopwatch",        group: "main", mod: "pasindu",  dot: "var(--es-pasindu)" },
-    { href: "assistant.html",   label: "Academic Assistant",  icon: "robot",            group: "main", mod: "kavishka", dot: "var(--es-kavishka)" },
-    { href: "assignments.html", label: "Assignment Risk",     icon: "clipboard2-pulse", group: "main", mod: "jithmi",   dot: "var(--es-jithmi)" },
+    { href: "learning.html",    label: "Learning Materials",  icon: "journal-bookmark", group: "main", mod: "learning",   dot: "var(--es-learning)" },
+    { href: "study.html",       label: "Study & Engagement",  icon: "stopwatch",        group: "main", mod: "study",  dot: "var(--es-study)" },
+    { href: "assistant.html",   label: "Academic Assistant",  icon: "robot",            group: "main", mod: "assistant", dot: "var(--es-assistant)" },
+    { href: "assignments.html", label: "Assignment Risk",     icon: "clipboard2-pulse", group: "main", mod: "risk",   dot: "var(--es-risk)" },
     { href: "calendar.html",    label: "Calendar",            icon: "calendar3",        group: "common" },
     { href: "profile.html",     label: "Profile & Settings",  icon: "person-gear",      group: "common" },
   ];
@@ -71,7 +71,7 @@
     el.innerHTML = `
       <div class="es-brand">
         <span class="es-logo"><i class="bi bi-mortarboard-fill"></i></span>
-        <span>EDU-SMART</span>
+        <span>AcadeAlert</span>
       </div>
       <div class="es-nav-label">Dashboards</div>
       ${main}

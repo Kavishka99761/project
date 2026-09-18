@@ -7,7 +7,7 @@ return [
     | Application Name
     |--------------------------------------------------------------------------
     */
-    'name' => env('APP_NAME', 'EDU-SMART'),
+    'name' => env('APP_NAME', 'AcadeAlert'),
 
     'env' => env('APP_ENV', 'production'),
 
