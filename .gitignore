@@ -11,6 +11,9 @@ dist-verify/
 build/
 .expo/
 vendor/
+.venv/
+__pycache__/
+*.py[cod]
 
 # Environment & secrets
 .env

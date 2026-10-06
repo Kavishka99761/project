@@ -31,6 +31,7 @@ hard-coded values).
 | 5 | `2026_01_01_000004_create_assistant_tables` | `academic_documents`, `academic_chunks`, `chat_conversations`, `chat_messages`, `academic_dates` — *Kavishka* |
 | 6 | `2026_01_01_000005_create_assignment_tables` | `assignments`, `risk_assessments` — *Jithmi* |
 | 7 | `2026_01_01_000006_add_integration_foreign_keys` | `study_sessions.assignment_id`, `study_sessions.document_id` |
+| 8 | `2026_01_02_000001_add_profile_details_to_users` | adds `phone`, `bio`, `avatar_path` to `users` |
 
 Sanctum contributes `personal_access_tokens` automatically (it ships its own
 migration) — **do not create that table yourself**.
@@ -104,6 +105,9 @@ convenience.
 | `password` | VARCHAR(255) | bcrypt hash |
 | `program` | VARCHAR(160) | e.g. "BSc (Hons) Software Engineering" |
 | `academic_year` | VARCHAR(80) | |
+| `phone` | VARCHAR(30) | optional contact number, shown on Profile |
+| `bio` | VARCHAR(500) | optional short bio, shown on Profile |
+| `avatar_path` | VARCHAR(255) | path on the `public` disk; served as `avatar_url` |
 | `dark_mode` | TINYINT(1) | default 0 |
 | `daily_target_minutes` | INT UNSIGNED | default 180 — drives Pasindu's target ring |
 | `email_verified_at`, `remember_token`, `created_at`, `updated_at` | | Laravel standard |

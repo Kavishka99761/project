@@ -179,7 +179,7 @@ mobile-app/
    │  ├─ config.js               # API_BASE, NETWORK_TIMEOUT_MS
    │  ├─ client.js               # fetch wrapper, bearer token, offline fallback
    │  ├─ risk.js                 # JITHMI engine (port of RiskCalculator.php)
-   │  └─ retrieve.js             # KAVISHKA engine (port of RetrievalService.php)
+   │  └─ retrieve.js             # KAVISHKA offline lexical retrieval fallback
    ├─ data/demo.js               # bundled offline dataset
    ├─ context/AuthContext.js     # session, login/logout, online flag
    ├─ components/
@@ -209,9 +209,11 @@ Two services are ported to the client so the UI stays correct with no round-trip
 | Client file | Laravel source | Constant shared |
 | ----------- | -------------- | --------------- |
 | `src/api/risk.js` | `app/Services/RiskCalculator.php` | `DAILY_CAPACITY = 5.0` |
-| `src/api/retrieve.js` | `app/Services/RetrievalService.php` | `MATCH_THRESHOLD = 0.08` |
+| `src/api/retrieve.js` | Laravel lexical fallback | Offline lexical retrieval; online API uses sentence-transformers |
 
-Both use identical formulae, so risk scores and citations match the API exactly.
+Risk scores match the API; offline assistant retrieval uses the bundled lexical
+fallback while online retrieval uses the sentence-transformers service. The
+offline answer remains grounded in the bundled knowledge base with citations.
 **If you change the PHP, change the matching JS in the same commit.**
 
 ---

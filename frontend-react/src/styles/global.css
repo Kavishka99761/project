@@ -1,0 +1,83 @@
+:root {
+  color-scheme: light dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Slim, theme-aware scrollbars used throughout the app shell */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(127, 127, 127, 0.35);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(127, 127, 127, 0.55);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.edu-fade-in {
+  animation: eduFadeIn 0.35s ease both;
+}
+
+@keyframes eduFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Liquid-glass decorative background \u2014 soft blurred color blobs that sit
+   behind auth screens (login/register/forgot/reset) to give the frosted glass
+   cards something to refract, similar to modern glassmorphism landing pages. */
+.edu-liquid-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.edu-liquid-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  animation: eduBlobFloat 16s ease-in-out infinite;
+}
+
+@keyframes eduBlobFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, 6%) scale(1.08);
+  }
+  66% {
+    transform: translate(-3%, -4%) scale(0.95);
+  }
+}

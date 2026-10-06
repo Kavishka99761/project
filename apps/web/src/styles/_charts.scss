@@ -1,0 +1,75 @@
+// Chart chrome (validated palette roles; see src/config/palette.js).
+
+.chart-card {
+  padding: 18px 18px 14px;
+
+  .chart-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .chart-title { font-size: 0.96rem; font-weight: 750; margin: 0; color: var(--es-text); }
+  .chart-sub { font-size: 0.78rem; color: var(--es-text-3); margin-top: 2px; }
+  .chart-body { position: relative; }
+  .chart-body.refetching { opacity: 0.55; transition: opacity 0.2s; }
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 0.76rem;
+  color: var(--es-chart-ink-2);
+
+  .key { display: inline-flex; align-items: center; gap: 6px; }
+  .key-rect { width: 10px; height: 10px; border-radius: 3px; }
+  .key-line { width: 14px; height: 2px; border-radius: 2px; }
+}
+
+.heatmap {
+  display: grid;
+  grid-template-columns: 38px repeat(24, minmax(10px, 1fr));
+  gap: 3px;
+  font-size: 0.66rem;
+  color: var(--es-chart-muted);
+
+  .hm-label { display: flex; align-items: center; font-weight: 700; color: var(--es-chart-ink-2); }
+  .hm-hour { text-align: center; }
+  .hm-cell { aspect-ratio: 1; border-radius: 4px; background: var(--es-chart-grid); cursor: default; transition: transform 0.15s; outline-offset: 1px; }
+  .hm-cell:hover, .hm-cell:focus-visible { transform: scale(1.25); outline: 2px solid var(--es-chart-surface); }
+}
+
+.scale-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--es-chart-muted);
+
+  span.step { width: 16px; height: 10px; border-radius: 3px; }
+}
+
+.chart-tooltip {
+  position: fixed;
+  z-index: 1100;
+  pointer-events: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  background: var(--es-glass-strong);
+  border: 1px solid var(--es-glass-border);
+  box-shadow: var(--es-shadow);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: var(--es-text);
+}
+
+.stacked-bar {
+  display: flex;
+  height: 14px;
+  gap: 2px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  .seg { height: 100%; transition: flex-grow 0.6s var(--es-ease); }
+  .seg:first-child { border-radius: 6px 0 0 6px; }
+  .seg:last-child { border-radius: 0 6px 6px 0; }
+}
+
+.sparkline path.line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

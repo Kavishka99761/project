@@ -1,0 +1,10 @@
+{
+  "name": "EDU-SMART",
+  "short_name": "EDU-SMART",
+  "description": "Learning materials, focused study, an academic assistant and deadline-risk planning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0d14",
+  "theme_color": "#4f46e5",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

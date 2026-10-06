@@ -32,13 +32,57 @@ Three routes are public. Everything else requires
 `200` → `{ "user": {...}, "token": "1|abc..." }`
 `422` → `{ "message": "...", "errors": { "email": ["The provided credentials are incorrect."] } }`
 
+### POST `/forgot-password`
+
+Public. Always returns a generic `200` message whether or not the email is
+registered (prevents account enumeration).
+
+```json
+{ "email": "student@edusmart.lk" }
+```
+
+`200` → `{ "message": "If an account exists for that email, a reset link has been sent." }`
+
+When `APP_DEBUG=true` (local/demo, no SMTP configured) the response also
+includes `dev_reset_token` so the reset flow can be exercised end-to-end
+without a mail server. In production this token is only ever logged/emailed.
+
+### POST `/reset-password`
+
+Public. Consumes the token from `/forgot-password` (valid 60 minutes, single use).
+
+```json
+{ "email": "student@edusmart.lk", "token": "<64-char token>", "password": "newpass", "password_confirmation": "newpass" }
+```
+
+`200` → `{ "message": "Your password has been reset. Please sign in." }`
+`422` → invalid/expired token.
+
 ### POST `/logout` 🔒
 
 Deletes the **current** token only (other devices stay signed in).
 
 ### GET `/me` 🔒 · PUT `/me` 🔒
 
-`PUT` accepts `name`, `program`, `academic_year`, `dark_mode`, `daily_target_minutes`.
+`PUT` accepts `name`, `program`, `academic_year`, `phone`, `bio`, `dark_mode`,
+`daily_target_minutes`. Response always includes `avatar_url` (null until an
+avatar is uploaded).
+
+### POST `/me/password` 🔒
+
+Change password while signed in. Revokes every other access token.
+
+```json
+{ "current_password": "password", "password": "newpass", "password_confirmation": "newpass" }
+```
+
+`422` → `{ "errors": { "current_password": ["Your current password is incorrect."] } }`
+
+### POST `/me/avatar` 🔒 · DELETE `/me/avatar` 🔒
+
+`POST` — multipart, field `avatar` (image, max 4 MB). Replaces any existing
+photo and returns the updated user (with fresh `avatar_url`).
+`DELETE` — removes the current photo.
 
 ---
 
@@ -480,7 +524,9 @@ Invoke-RestMethod -Uri http://localhost:8000/api/dashboard -Headers $h
 | ------ | ---- | ----- |
 | GET | `/health` | public |
 | POST | `/register`, `/login` | public |
+| POST | `/forgot-password`, `/reset-password` | public |
 | POST | `/logout` · GET/PUT `/me` | Common |
+| POST | `/me/password` · POST/DELETE `/me/avatar` | Common |
 | GET | `/dashboard`, `/calendar` | Common |
 | * | `/modules` (apiResource) | Common |
 | GET/POST | `/notifications`, `/notifications/read-all` | Common |

@@ -1,0 +1,148 @@
+// EDU-SMART design tokens (CSS custom properties) for light and dark mode.
+//
+// Data-visualisation colours come from the validated palette (CVD-checked
+// with the dataviz validator): module identity hues, the status scale and
+// the chart chrome. UI chrome (glass, text, shadows) is defined alongside.
+
+:root,
+[data-bs-theme='light'] {
+  color-scheme: light;
+
+  // Canvas behind the glass
+  --es-bg: #eef1f8;
+  --es-blob-1: #c7d2fe;
+  --es-blob-2: #bae6fd;
+  --es-blob-3: #fbcfe8;
+  --es-blob-4: #a7f3d0;
+  --es-noise-opacity: 0.035;
+
+  // Glass
+  --es-glass: rgba(255, 255, 255, 0.56);
+  --es-glass-strong: rgba(255, 255, 255, 0.8);
+  --es-glass-solid: rgba(252, 252, 251, 0.92);
+  --es-glass-border: rgba(255, 255, 255, 0.72);
+  --es-glass-edge: rgba(15, 23, 42, 0.07);
+  --es-glass-highlight: rgba(255, 255, 255, 0.95);
+  --es-glass-sheen: rgba(255, 255, 255, 0.55);
+  --es-glass-light: rgba(255, 255, 255, 0.45);
+  --es-shadow-sm: 0 2px 8px -2px rgba(30, 41, 89, 0.08);
+  --es-shadow: 0 12px 40px -14px rgba(30, 41, 89, 0.22), 0 2px 6px rgba(30, 41, 89, 0.05);
+  --es-shadow-lg: 0 30px 80px -24px rgba(30, 41, 89, 0.35);
+  --es-hover: rgba(15, 23, 42, 0.045);
+  --es-active: rgba(79, 70, 229, 0.1);
+
+  // Text
+  --es-text: #0f172a;
+  --es-text-2: #475569;
+  --es-text-3: #64748b;
+  --es-divider: rgba(15, 23, 42, 0.08);
+
+  // Brand + module identity (validated categorical slots)
+  --es-primary: #4f46e5;
+  --es-primary-rgb: 79, 70, 229;
+  --es-primary-soft: rgba(79, 70, 229, 0.12);
+  --es-learning: #2a78d6;
+  --es-study: #1baf7a;
+  --es-assistant: #4a3aa7;
+  --es-assignments: #eb6834;
+  --es-platform: #4f46e5;
+  // Darker inks for text/icons on light glass (contrast >= 4.5:1)
+  --es-learning-ink: #1d5fae;
+  --es-study-ink: #0b7a54;
+  --es-assistant-ink: #4a3aa7;
+  --es-assignments-ink: #b84a1c;
+
+  // Status scale (reserved meaning — always shown with icon + label)
+  --es-good: #0ca30c;
+  --es-warning: #fab219;
+  --es-serious: #ec835a;
+  --es-critical: #d03b3b;
+  --es-good-ink: #006300;
+  --es-warning-ink: #8a5a00;
+  --es-serious-ink: #a8481f;
+  --es-critical-ink: #b42323;
+
+  // Chart chrome
+  --es-chart-surface: #fcfcfb;
+  --es-chart-grid: #e1e0d9;
+  --es-chart-axis: #c3c2b7;
+  --es-chart-ink: #0b0b0b;
+  --es-chart-ink-2: #52514e;
+  --es-chart-muted: #898781;
+  --es-series-1: #2a78d6;
+  --es-series-1-soft: #9ec5f4;
+
+  --es-blur: 22px;
+  --es-radius: 1rem;
+  --es-radius-lg: 1.35rem;
+  --es-radius-xl: 1.75rem;
+  --es-sidebar-w: 268px;
+  --es-sidebar-w-collapsed: 84px;
+  --es-topbar-h: 68px;
+  --es-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --es-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+[data-bs-theme='dark'] {
+  color-scheme: dark;
+
+  --es-bg: #090b12;
+  --es-blob-1: #312e81;
+  --es-blob-2: #0c4a6e;
+  --es-blob-3: #581c48;
+  --es-blob-4: #064e3b;
+  --es-noise-opacity: 0.06;
+
+  --es-glass: rgba(22, 24, 36, 0.52);
+  --es-glass-strong: rgba(24, 27, 40, 0.84);
+  --es-glass-solid: rgba(26, 26, 25, 0.94);
+  --es-glass-border: rgba(255, 255, 255, 0.09);
+  --es-glass-edge: rgba(0, 0, 0, 0.35);
+  --es-glass-highlight: rgba(255, 255, 255, 0.09);
+  --es-glass-sheen: rgba(255, 255, 255, 0.07);
+  --es-glass-light: rgba(255, 255, 255, 0.1);
+  --es-shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+  --es-shadow: 0 14px 44px -14px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --es-shadow-lg: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+  --es-hover: rgba(255, 255, 255, 0.06);
+  --es-active: rgba(129, 140, 248, 0.16);
+
+  --es-text: #e8ecf4;
+  --es-text-2: #a8b3c7;
+  --es-text-3: #8391a7;
+  --es-divider: rgba(255, 255, 255, 0.08);
+
+  --es-primary: #818cf8;
+  --es-primary-rgb: 129, 140, 248;
+  --es-primary-soft: rgba(129, 140, 248, 0.16);
+  --es-learning: #3987e5;
+  --es-study: #199e70;
+  --es-assistant: #9085e9;
+  --es-assignments: #d95926;
+  --es-platform: #818cf8;
+  --es-learning-ink: #7fb2f2;
+  --es-study-ink: #4fd3a3;
+  --es-assistant-ink: #ada4f0;
+  --es-assignments-ink: #f39469;
+
+  --es-good-ink: #45c845;
+  --es-warning-ink: #fbc54f;
+  --es-serious-ink: #f2a382;
+  --es-critical-ink: #ef7b7b;
+
+  --es-chart-surface: #1a1a19;
+  --es-chart-grid: #2c2c2a;
+  --es-chart-axis: #383835;
+  --es-chart-ink: #ffffff;
+  --es-chart-ink-2: #c3c2b7;
+  --es-chart-muted: #898781;
+  --es-series-1: #3987e5;
+  --es-series-1-soft: #184f95;
+}
+
+// Accent for the current module (set on the page wrapper).
+.accent-learning { --es-accent: var(--es-learning); --es-accent-ink: var(--es-learning-ink); }
+.accent-study { --es-accent: var(--es-study); --es-accent-ink: var(--es-study-ink); }
+.accent-assistant { --es-accent: var(--es-assistant); --es-accent-ink: var(--es-assistant-ink); }
+.accent-assignments { --es-accent: var(--es-assignments); --es-accent-ink: var(--es-assignments-ink); }
+.accent-platform { --es-accent: var(--es-platform); --es-accent-ink: var(--es-primary); }

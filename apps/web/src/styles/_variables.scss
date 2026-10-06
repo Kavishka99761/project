@@ -1,0 +1,61 @@
+// Bootstrap 5.3 overrides — loaded before Bootstrap so every component,
+// utility and color-mode map is generated from the EDU-SMART design tokens.
+
+$primary: #4f46e5;
+$secondary: #64748b;
+$success: #0ca30c;
+$info: #2a78d6;
+$warning: #fab219;
+$danger: #d03b3b;
+$light: #f1f5f9;
+$dark: #0f172a;
+
+$enable-shadows: false;
+$enable-gradients: false;
+$enable-negative-margins: true;
+$enable-dark-mode: true;
+$color-mode-type: data;
+
+$font-family-sans-serif: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+$font-family-monospace: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+$font-size-base: 0.9375rem;
+$line-height-base: 1.55;
+$headings-font-weight: 700;
+$headings-letter-spacing: -0.01em;
+
+$body-bg: #eef1f8;
+$body-color: #0f172a;
+$body-bg-dark: #090b12;
+$body-color-dark: #e2e8f0;
+$body-secondary-color-dark: #94a3b8;
+$border-color-dark: rgba(255, 255, 255, 0.1);
+
+$border-radius: 0.75rem;
+$border-radius-sm: 0.55rem;
+$border-radius-lg: 1.1rem;
+$border-radius-xl: 1.5rem;
+$border-radius-xxl: 2rem;
+
+$input-btn-padding-y: 0.55rem;
+$input-btn-padding-x: 1rem;
+$btn-font-weight: 600;
+$input-bg: rgba(255, 255, 255, 0.7);
+$input-border-color: rgba(15, 23, 42, 0.12);
+$input-focus-border-color: #818cf8;
+$input-focus-box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.18);
+$form-select-focus-box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.18);
+
+$card-bg: transparent;
+$card-border-width: 0;
+$modal-content-border-width: 0;
+$modal-backdrop-opacity: 0.35;
+$dropdown-border-width: 0;
+$dropdown-link-active-bg: $primary;
+$toast-border-width: 0;
+$popover-border-width: 0;
+$nav-link-font-weight: 600;
+$badge-font-weight: 600;
+$progress-height: 0.5rem;
+$progress-border-radius: 999px;
+
+$transition-base: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);

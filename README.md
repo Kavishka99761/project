@@ -6,8 +6,9 @@ independently-owned modules on top of one shared platform layer.
 | Layer      | Technology                          | Location          | Status                    |
 | ---------- | ----------------------------------- | ----------------- | ------------------------- |
 | Web        | HTML · CSS · JavaScript · Bootstrap | `frontend-web/`   | ✅ Runs standalone         |
+| Web (React) | React 18 · MUI 5 · Framer Motion   | `frontend-react/` | ✅ Common Platform Layer built; feature-module pages are placeholders |
 | Mobile     | React Native · Expo SDK 51          | `mobile-app/`     | ✅ Bundles (822 modules)   |
-| Backend    | Laravel 11 · Sanctum                | `backend-laravel/`| ✅ Complete, needs PHP 8.2 |
+| Backend    | Laravel 11 · Sanctum                | `backend-laravel/`| ✅ Complete; PHP 8.2+ and Python for semantic AI |
 | Database   | MySQL 8 · SQL schema + migrations   | `backend-laravel/database/` | ✅ 16 tables + view |
 | Docs       | Architecture, setup, API reference  | `docs/`           | ✅                        |
 
@@ -122,6 +123,7 @@ project/
 │  ├─ app/Http/Controllers/Api/   # 11 controllers
 │  ├─ app/Models/                 # 14 Eloquent models
 │  ├─ app/Services/               # RiskCalculator, SummaryGenerator, RetrievalService
+│  ├─ academic-ai-service/        # Python sentence-transformers API
 │  ├─ config/                     # 14 config files
 │  ├─ database/migrations/        # 7 migrations
 │  ├─ database/seeders/           # DatabaseSeeder (demo data via real services)
@@ -171,10 +173,10 @@ See [`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md) for the full checklist.
                            : min(100, round(hoursPerDay/5*60 + (100-progress)*0.4))
   level        = score>=75 Critical | >=50 High | >=25 Medium | else Low
   ```
-- **Assistant retrieval** is a transparent lexical scorer (keyword hit = 3.0,
-  content term frequency = `1 + log(freq)`, normalised by query length,
-  `MATCH_THRESHOLD = 0.08`). No external LLM or vector database is required, so
-  the project runs anywhere while still demonstrating real RAG with citations.
+- **Assistant retrieval** uses sentence-transformers (`all-MiniLM-L6-v2`) for
+  semantic ranking in the online API. If the local embedding service is
+  unavailable, Laravel falls back to lexical retrieval; mobile also keeps its
+  lexical retriever for offline use. See [`docs/SETUP-BACKEND.md`](docs/SETUP-BACKEND.md).
 - **Summarisation** is extractive: sentences are scored by keyword frequency and
   the top N are kept in original order (Short = 2, Medium = 4, Detailed = 7).
 

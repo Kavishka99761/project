@@ -12,6 +12,7 @@ Sanctum token auth, MySQL 8.
 | PHP | **8.2+** | `php -v` |
 | Composer | 2.x | `composer -V` |
 | MySQL | 8.0+ (or MariaDB 10.6+) | `mysql --version` |
+| Python | **3.10+** | `python --version` (AI Academic Assistant semantic retrieval) |
 
 PHP extensions required: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`,
 `ctype`, `json`, `bcmath`, `fileinfo`.
@@ -95,7 +96,34 @@ chmod -R 775 storage bootstrap/cache
 
 ### 5. Start the server
 
+For semantic retrieval, start the Academic AI embedding service in a second
+terminal before starting Laravel. From the repository root:
+
 ```bash
+cd backend-laravel/academic-ai-service
+python -m venv .venv
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# macOS / Linux:
+# source .venv/bin/activate
+python -m pip install -U sentence-transformers
+python -m pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8001
+```
+
+The first run downloads the `sentence-transformers/all-MiniLM-L6-v2` model.
+In a second terminal, request `http://127.0.0.1:8001/health` to load the model
+and confirm the service is ready. Keep the service bound to localhost; it is
+intended for Laravel on the same host.
+Laravel uses `SENTENCE_TRANSFORMERS_URL` and `SENTENCE_TRANSFORMERS_TIMEOUT` from
+`.env`. When the service is unavailable, the assistant logs a warning and uses
+its lexical retrieval fallback. The offline mobile assistant also continues to
+use its bundled lexical retriever.
+
+In another terminal, start Laravel:
+
+```bash
+cd backend-laravel
 php artisan serve
 # → http://localhost:8000
 ```
@@ -139,6 +167,8 @@ Full test script (login → dashboard → rank → chat):
 | `DB_USERNAME` | `root` | |
 | `DB_PASSWORD` | *(empty)* | Set your MySQL password |
 | `SANCTUM_STATEFUL_DOMAINS` | `localhost:5173,127.0.0.1:5173,localhost:19006` | Comma-separated, no `http://` |
+| `SENTENCE_TRANSFORMERS_URL` | `http://127.0.0.1:8001` | Local semantic-ranking service; set empty to force lexical retrieval |
+| `SENTENCE_TRANSFORMERS_TIMEOUT` | `60` | HTTP timeout in seconds for embedding/ranking requests |
 
 ### Drivers chosen for zero extra tables
 
@@ -243,6 +273,7 @@ backend-laravel/
 │  ├─ Models/                       # 14 Eloquent models
 │  ├─ Providers/AppServiceProvider.php
 │  └─ Services/                     # RiskCalculator, SummaryGenerator, RetrievalService
+├─ academic-ai-service/             # Python API using sentence-transformers
 ├─ database/
 │  ├─ migrations/                   # 7 files
 │  ├─ seeders/DatabaseSeeder.php

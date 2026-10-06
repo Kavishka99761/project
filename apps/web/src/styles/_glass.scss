@@ -1,0 +1,173 @@
+// ---------------------------------------------------------------------------
+// Liquid glass
+//   .glass               frosted translucent panel with refraction rim + sheen
+//   .glass-strong        more opaque (menus, modals, top bar)
+//   .glass-solid         near-opaque surface for charts and dense data
+//   .glass-interactive   pointer-tracking specular light + lift on hover
+//   .liquid-refract      SVG displacement refraction (Chromium, progressive)
+// ---------------------------------------------------------------------------
+
+@mixin glass-base($bg) {
+  position: relative;
+  isolation: isolate;
+  background: $bg;
+  -webkit-backdrop-filter: blur(var(--es-blur)) saturate(175%);
+  backdrop-filter: blur(var(--es-blur)) saturate(175%);
+  border: 1px solid var(--es-glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--es-glass-highlight),
+    inset 0 -1px 0 var(--es-glass-edge),
+    var(--es-shadow);
+  border-radius: var(--es-radius-lg);
+}
+
+.glass {
+  @include glass-base(var(--es-glass));
+
+  // Refraction rim: a gradient hairline that brightens the top-left edge,
+  // like light bending through the thickness of the glass.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      140deg,
+      var(--es-glass-highlight) 0%,
+      transparent 32%,
+      transparent 68%,
+      var(--es-glass-light) 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  // Soft top sheen
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 55%;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(180deg, var(--es-glass-sheen), transparent);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+}
+
+.glass-strong { @include glass-base(var(--es-glass-strong)); }
+.glass-solid {
+  @include glass-base(var(--es-glass-solid));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.glass-flat {
+  background: var(--es-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--es-glass-border);
+  border-radius: var(--es-radius);
+}
+
+// Pointer light — JS sets --mx/--my on pointermove (see useGlassPointer).
+.glass-interactive {
+  transition: transform 0.35s var(--es-ease), box-shadow 0.35s var(--es-ease);
+
+  .glass-light {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s var(--es-ease);
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.22), transparent 45%);
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 var(--es-glass-highlight),
+      inset 0 -1px 0 var(--es-glass-edge),
+      var(--es-shadow-lg);
+
+    .glass-light { opacity: 1; }
+  }
+}
+
+[data-bs-theme='dark'] .glass-interactive .glass-light {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(165, 180, 252, 0.14), transparent 45%);
+}
+
+// True refraction where the engine supports SVG filters in backdrop-filter.
+.has-liquid-refraction .liquid-refract {
+  -webkit-backdrop-filter: url(#es-liquid) blur(14px) saturate(180%);
+  backdrop-filter: url(#es-liquid) blur(14px) saturate(180%);
+}
+
+// Accent-tinted glass (module headers, highlights)
+.glass-accent {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--es-accent) 20%, transparent), transparent 70%),
+    var(--es-glass);
+}
+
+// Animated liquid backdrop --------------------------------------------------
+.liquid-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: var(--es-bg);
+  pointer-events: none;
+
+  .blob {
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    filter: blur(70px);
+    opacity: 0.75;
+    mix-blend-mode: normal;
+    animation: es-blob 26s var(--es-ease) infinite alternate;
+    will-change: transform, border-radius;
+  }
+
+  .blob-1 { background: var(--es-blob-1); top: -14vmax; left: -10vmax; }
+  .blob-2 { background: var(--es-blob-2); top: 10vmax; right: -16vmax; animation-delay: -6s; animation-duration: 30s; }
+  .blob-3 { background: var(--es-blob-3); bottom: -18vmax; left: 18vmax; animation-delay: -12s; animation-duration: 34s; }
+  .blob-4 { background: var(--es-blob-4); bottom: -10vmax; right: 10vmax; width: 32vmax; height: 32vmax; animation-delay: -18s; opacity: 0.55; }
+
+  // Fine grain makes large blurred areas feel like frosted glass, not plastic.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: var(--es-noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes es-blob {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+  33% { transform: translate3d(6vmax, 4vmax, 0) rotate(40deg) scale(1.08); border-radius: 58% 42% 35% 65% / 52% 61% 39% 48%; }
+  66% { transform: translate3d(-4vmax, 7vmax, 0) rotate(85deg) scale(0.94); border-radius: 37% 63% 51% 49% / 63% 35% 65% 37%; }
+  100% { transform: translate3d(3vmax, -3vmax, 0) rotate(130deg) scale(1.04); border-radius: 55% 45% 42% 58% / 38% 57% 43% 62%; }
+}
+
+.reduce-motion .liquid-backdrop .blob { animation: none; }
+.no-glass {
+  --es-glass: var(--es-glass-solid);
+  --es-blur: 0px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-backdrop .blob { animation: none; }
+  .glass-interactive:hover { transform: none; }
+}

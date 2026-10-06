@@ -30,8 +30,8 @@ boundaries are, and why the design decisions were made.
             │        │                     │
             │   Controllers (11)           │
             │        │                     │
-            │   Services (3)  ◀── domain   │
-            │        │            logic    │
+            │   Services (3)  ─────────────┼──▶ academic-ai-service/
+            │        │                     │    Python + sentence-transformers
             │   Models (14)                │
             └──────────────┬───────────────┘
                            ▼
@@ -180,13 +180,15 @@ app/Http/Controllers/Api/*Controller.php     ← validation, auth, HTTP shape
 **Controllers** never contain domain maths. They validate input, resolve the
 authenticated user, delegate to a service, and shape the JSON response.
 
-**Services** are constructor-injected and hold no HTTP or Eloquent state:
+**Services** are constructor-injected and keep domain behavior out of controllers.
+`RetrievalService` calls the local Python embedding API for semantic ranking and
+falls back to lexical scoring if that service is unavailable.
 
 | Service | Owner | Responsibility |
 | ------- | ----- | -------------- |
 | `RiskCalculator` | Jithmi | `assess()` → `{score, level, hours_per_day, reasons, days}`; `rank()`; `recalculate()` persists a `risk_assessments` snapshot |
 | `SummaryGenerator` | Bethmi | Extractive summarisation (`generate()`) + keyword extraction (`extractKeywords()`) |
-| `RetrievalService` | Kavishka | RAG scoring (`rank`, `best`) and grounded answer composition (`answer`) |
+| `RetrievalService` | Kavishka | Semantic RAG ranking via `academic-ai-service/`, lexical fallback, and grounded answer composition |
 
 **Models** declare relations and `$casts` (JSON columns → arrays, dates → Carbon).
 
@@ -271,14 +273,14 @@ free to differ.
 | Rule | PHP (authoritative) | Ports |
 | ---- | ------------------- | ----- |
 | Risk scoring | `app/Services/RiskCalculator.php` → `assess()` | `frontend-web/assets/js/mock-data.js` → `ES.calcRisk`<br>`mobile-app/src/api/risk.js` → `calcRisk` |
-| RAG retrieval | `app/Services/RetrievalService.php` → `score()` / `answer()` | `mobile-app/src/api/retrieve.js` |
+| RAG retrieval | `app/Services/RetrievalService.php` → semantic rank / `answer()` | `mobile-app/src/api/retrieve.js` → matching lexical fallback |
 | Risk levels | `RiskCalculator::levelFor()` | both risk scorers above |
 
 Shared constants — change them in every copy at once:
 
 ```
 DAILY_CAPACITY   = 5.0      // hours a student can reasonably study per day
-MATCH_THRESHOLD  = 0.08     // minimum normalised retrieval score
+LEXICAL_MATCH_THRESHOLD = 0.08  // used by the lexical fallback on both API and mobile
 ```
 
 Four porting traps worth knowing, because the first two were live bugs here:
@@ -367,8 +369,9 @@ calendar — is stored as an **offset from today** (`ES.isoDate(n)` in the web l
 seeder), never as an absolute date, so the demo cannot decay into "everything
 overdue" next month. See §6.1 for why those helpers must not use `toISOString()`.
 
-> **If you change `RiskCalculator::assess()` or `RetrievalService::score()`, update
-> every port in §6.1 and every dataset in §6.3 in the same commit.**
+> **If you change `RiskCalculator::assess()`, update every port in §6.1 and every
+> dataset in §6.3 in the same commit.** Mobile retrieval remains an intentionally
+> lexical offline fallback, not a port of the online embedding service.
 
 Reproduce the parity check with no PHP, no Composer and no database — run the real
 client code in Node against the real seeder source and assert 90/55/40/14:
@@ -472,7 +475,7 @@ Public routes are exactly three: `GET /api/health`, `POST /api/register`,
 | ---- | ------------- | ------------------- |
 | Web ↔ API | Web frontend runs on mock data only | Add an `ES.api` fetch layer mirroring `mobile-app/src/api/client.js` |
 | Document text extraction | Plain-text (`.txt`/`.md`) only | Add a PDF parser (e.g. `smalot/pdfparser`) behind `DocumentController::store` |
-| Assistant retrieval | Lexical scoring | Swap in embeddings + a vector index behind the same `RetrievalService` interface |
+| Assistant retrieval | Sentence-transformers semantic scoring with lexical fallback | `mobile-app/src/api/retrieve.js` provides lexical offline retrieval |
 | Notifications | Pull-based (polled) | Push via queue + FCM/APNs |
 | Tests | None included | Feature tests per controller; unit tests for the three services |
 | CI | None | Lint (Pint, ESLint) + `expo export` bundle check + `php artisan test` |
