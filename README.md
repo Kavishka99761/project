@@ -1,5 +1,4 @@
-# EDU-SMART
-
+# ACADEALERT
 A full-stack academic productivity platform for university students, built as four
 independently-owned modules on top of one shared platform layer.
 
