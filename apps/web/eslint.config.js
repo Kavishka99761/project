@@ -19,7 +19,7 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^([A-Z_]|motion$)', argsIgnorePattern: '^(_|[A-Z])' }],
       'react-refresh/only-export-components': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/refs': 'off',

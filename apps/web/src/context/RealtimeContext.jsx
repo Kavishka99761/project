@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { get } from '@/lib/api';
-import { connectRealtime, disconnectRealtime, watchActivity, watchLiveStudy, watchNotifications } from '@/lib/firebase';
+
+// The Firebase SDK is large — load it only once a signed-in student needs it.
+const loadFirebase = () => import('@/lib/firebase');
 
 const RealtimeContext = createContext(null);
 
@@ -66,7 +68,7 @@ export function RealtimeProvider({ children }) {
   // Firestore path.
   useEffect(() => {
     if (!isAuthenticated) {
-      disconnectRealtime();
+      loadFirebase().then((firebase) => firebase.disconnectRealtime()).catch(() => {});
       setStatus('offline');
       return undefined;
     }
@@ -81,6 +83,7 @@ export function RealtimeProvider({ children }) {
           setStatus('disabled');
           return;
         }
+        const { connectRealtime, watchActivity, watchLiveStudy, watchNotifications } = await loadFirebase();
         await connectRealtime(config);
         if (cancelled) return;
         setStatus('live');

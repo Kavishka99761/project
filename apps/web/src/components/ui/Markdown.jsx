@@ -8,6 +8,5 @@ marked.setOptions({ gfm: true, breaks: false });
 export function Markdown({ children, className = '' }) {
   const html = useMemo(() => DOMPurify.sanitize(marked.parse(children ?? '')), [children]);
 
-  // eslint-disable-next-line react/no-danger
   return <div className={`markdown-body ${className}`} dangerouslySetInnerHTML={{ __html: html }} />;
 }
