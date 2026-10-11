@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------
-#  EDU-SMART — root ignore
-#  Layer-specific ignores live in frontend-web/, mobile-app/ and
-#  backend-laravel/. This file covers cross-cutting OS/editor noise.
+#  AcadeAlert — root ignore
+#  Layer-specific ignores live in apps/api/, apps/web/ and
+#  apps/mobile/. This file covers cross-cutting OS/editor noise.
 # ------------------------------------------------------------------
 
 # Dependencies & build output
