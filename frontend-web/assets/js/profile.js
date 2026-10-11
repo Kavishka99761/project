@@ -51,6 +51,7 @@
     ES.currentUser.year = $("inYear").value.trim();
     renderProfile();
     ES.renderSidebar("profile.html"); // refresh sidebar user card
+    ES.saveUser(); // persist + refresh the top-right avatar menu
     ES.toast("Profile saved");
   });
 
@@ -72,7 +73,11 @@
   $("setTarget").value = ES.studyToday.targetMinutes;
   $("setTarget").addEventListener("change", (e) => { ES.studyToday.targetMinutes = +e.target.value || 180; ES.toast("Study target updated", "info"); });
 
-  $("setNotif").addEventListener("change", (e) => ES.toast("Deadline notifications " + (e.target.checked ? "on" : "off"), "info"));
+  $("setNotif").checked = ES.notificationsEnabled();
+  $("setNotif").addEventListener("change", (e) => {
+    ES.setNotificationsEnabled(e.target.checked);
+    ES.toast("Deadline notifications " + (e.target.checked ? "on" : "off"), "info");
+  });
 
   /* ---------- Export / backup ---------- */
   function download(name, content, type) {
