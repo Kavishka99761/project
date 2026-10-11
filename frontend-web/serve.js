@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Zero-dependency static dev server (Node.js)
+   AcadeAlert — Zero-dependency static dev server (Node.js)
    Serves the web frontend so you can preview it without installing anything.
    Usage:  node serve.js   →  http://localhost:5173
    ========================================================================== */
@@ -45,5 +45,5 @@ http.createServer((req, res) => {
     res.end(data);
   });
 }).listen(PORT, () => {
-  console.log(`\n  EDU-SMART web frontend running at  →  http://localhost:${PORT}\n`);
+  console.log(`\n  AcadeAlert web frontend running at  →  http://localhost:${PORT}\n`);
 });

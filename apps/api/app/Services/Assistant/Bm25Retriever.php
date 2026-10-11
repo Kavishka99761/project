@@ -71,8 +71,8 @@ class Bm25Retriever
 
         $n = $chunks->count();
         $avgdl = max(1.0, (float) $chunks->avg('token_count'));
-        $k1 = (float) config('edusmart.assistant.bm25_k1', 1.4);
-        $b = (float) config('edusmart.assistant.bm25_b', 0.72);
+        $k1 = (float) config('acadealert.assistant.bm25_k1', 1.4);
+        $b = (float) config('acadealert.assistant.bm25_b', 0.72);
 
         $df = [];
         foreach ($chunks as $chunk) {

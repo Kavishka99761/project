@@ -53,7 +53,7 @@ class Document extends Model
                 DB::table($table)->where('document_id', $document->id)->update(['document_id' => null]);
             }
             if ($document->file_path) {
-                Storage::disk(config('edusmart.uploads.disk'))->delete($document->file_path);
+                Storage::disk(config('acadealert.uploads.disk'))->delete($document->file_path);
             }
         });
     }
@@ -61,7 +61,7 @@ class Document extends Model
     public function hasFile(): bool
     {
         return $this->file_path !== null
-            && Storage::disk(config('edusmart.uploads.disk'))->exists($this->file_path);
+            && Storage::disk(config('acadealert.uploads.disk'))->exists($this->file_path);
     }
 
     public function module(): BelongsTo

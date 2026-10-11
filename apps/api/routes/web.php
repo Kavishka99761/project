@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Route;
 | The root URL just describes the service for anyone who opens it.
 */
 Route::get('/', fn () => response()->json([
-    'service' => 'EDU-SMART API',
-    'version' => config('edusmart.version'),
+    'service' => 'AcadeAlert API',
+    'version' => config('acadealert.version'),
     'api' => url('/api/v1'),
     'health' => url('/api/v1/health'),
     'web_app' => config('app.frontend_url'),

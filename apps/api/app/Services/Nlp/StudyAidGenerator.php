@@ -17,7 +17,7 @@ final class StudyAidGenerator
      */
     public function flashcards(Analysis $analysis): array
     {
-        $limit = (int) config('edusmart.nlp.max_flashcards', 16);
+        $limit = (int) config('acadealert.nlp.max_flashcards', 16);
         $cards = [];
         $usedSentences = [];
 
@@ -58,7 +58,7 @@ final class StudyAidGenerator
      */
     public function quiz(Analysis $analysis): array
     {
-        $limit = (int) config('edusmart.nlp.max_quiz_questions', 10);
+        $limit = (int) config('acadealert.nlp.max_quiz_questions', 10);
         $pool = array_column($analysis->keywords, 'term');
         if (count($pool) < 4) {
             return [];

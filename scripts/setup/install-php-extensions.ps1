@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Prepares a Windows PHP install (XAMPP by default) for the EDU-SMART API.
+    Prepares a Windows PHP install (XAMPP by default) for the AcadeAlert API.
 
 .DESCRIPTION
     The Laravel API talks to Microsoft SQL Server through the official
@@ -78,7 +78,7 @@ if (-not ((Test-Path (Join-Path $extDir $pdoDll)) -and (Test-Path (Join-Path $ex
 }
 
 # --- Enable extensions in php.ini ---------------------------------------------
-$backup = "$ini.edusmart-backup"
+$backup = "$ini.acadealert-backup"
 if (-not (Test-Path $backup)) {
     Copy-Item $ini $backup
     Write-Host "Backed up php.ini -> $backup"
@@ -103,7 +103,7 @@ foreach ($name in 'gd', 'zip', 'intl') {
 
 $driverLines = @($pdoDll, $srvDll) | Where-Object { $content -notmatch [regex]::Escape($_) }
 if ($driverLines) {
-    $content = $content.TrimEnd() + "`r`n`r`n; EDU-SMART: Microsoft Drivers for PHP for SQL Server`r`n"
+    $content = $content.TrimEnd() + "`r`n`r`n; AcadeAlert: Microsoft Drivers for PHP for SQL Server`r`n"
     foreach ($dll in $driverLines) {
         $content += "extension=$dll`r`n"
         Write-Host "  enabled $dll"
@@ -118,4 +118,4 @@ $loaded = & $php -r 'foreach ([''pdo_sqlsrv'',''sqlsrv'',''gd'',''zip'',''intl''
 $missing = $loaded | Where-Object { $_ -match '=0$' }
 $loaded | ForEach-Object { Write-Host "  $_" }
 if ($missing) { throw "Some extensions failed to load: $($missing -join ', ')" }
-Write-Host 'PHP is ready for EDU-SMART.' -ForegroundColor Green
+Write-Host 'PHP is ready for AcadeAlert.' -ForegroundColor Green

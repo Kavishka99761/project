@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — App Shell
+   AcadeAlert — App Shell
    Renders the shared sidebar + topbar, handles theming (light/dark),
    mobile navigation, auth guard and logout. Included on every dashboard page.
    ========================================================================== */
@@ -71,7 +71,7 @@
     el.innerHTML = `
       <div class="es-brand">
         <span class="es-logo"><i class="bi bi-mortarboard-fill"></i></span>
-        <span>EDU-SMART</span>
+        <span>AcadeAlert</span>
       </div>
       <div class="es-nav-label">Dashboards</div>
       ${main}

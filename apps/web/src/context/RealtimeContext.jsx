@@ -47,7 +47,7 @@ export function RealtimeProvider({ children }) {
     const settings = user?.settings;
     if (settings?.notify_browser && 'Notification' in window && Notification.permission === 'granted' && document.visibilityState !== 'visible') {
       try {
-        new Notification(item.title, { body: item.message ?? '', icon: '/favicon.svg', tag: `edusmart-${item.id}` });
+        new Notification(item.title, { body: item.message ?? '', icon: '/favicon.svg', tag: `acadealert-${item.id}` });
       } catch {
         /* some browsers only allow notifications from a service worker */
       }

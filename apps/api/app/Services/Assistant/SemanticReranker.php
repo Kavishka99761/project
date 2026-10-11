@@ -16,7 +16,7 @@ class SemanticReranker
 
     public function available(): bool
     {
-        return (string) config('edusmart.ai_engine.url') !== '' && ! Cache::get(self::DOWN_KEY, false);
+        return (string) config('acadealert.ai_engine.url') !== '' && ! Cache::get(self::DOWN_KEY, false);
     }
 
     /**
@@ -32,9 +32,9 @@ class SemanticReranker
         }
 
         try {
-            $response = Http::timeout((int) config('edusmart.ai_engine.timeout', 6))
+            $response = Http::timeout((int) config('acadealert.ai_engine.timeout', 6))
                 ->connectTimeout(1)
-                ->post(rtrim((string) config('edusmart.ai_engine.url'), '/').'/rank', [
+                ->post(rtrim((string) config('acadealert.ai_engine.url'), '/').'/rank', [
                     'query' => $query,
                     'passages' => array_map(fn ($h) => trim(($h['chunk']->section ?? '').'. '.$h['chunk']->content), $hits),
                 ]);

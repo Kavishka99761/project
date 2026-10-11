@@ -1,6 +1,6 @@
-# EDU-SMART · Mobile (React Native + Expo)
+# AcadeAlert · Mobile (React Native + Expo)
 
-The mobile client for the EDU-SMART academic platform. It mirrors the four module
+The mobile client for the AcadeAlert academic platform. It mirrors the four module
 dashboards from the web frontend and talks to the Laravel API — but it is built
 **offline-first**, so it is fully demonstrable even when PHP/MySQL are not running.
 
@@ -79,7 +79,7 @@ No screen ever crashes on a missing backend: `client.js#request()` returns `null
 on timeout/DNS failure and each screen substitutes the bundled dataset. Only real
 HTTP errors (4xx/5xx with a payload) are surfaced to the user.
 
-Demo credentials: **student@edusmart.lk** / **password** (same as the Laravel
+Demo credentials: **student@acadealert.lk** / **password** (same as the Laravel
 seeder and the web frontend).
 
 ## Duplicated-by-design logic

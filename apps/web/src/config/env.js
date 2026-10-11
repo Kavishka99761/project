@@ -8,5 +8,5 @@ export const FIREBASE_WEB_CONFIG = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || undefined,
 };
 
-export const APP_NAME = 'EDU-SMART';
-export const DEMO_CREDENTIALS = { email: 'student@edusmart.lk', password: 'password' };
+export const APP_NAME = 'AcadeAlert';
+export const DEMO_CREDENTIALS = { email: 'student@acadealert.lk', password: 'password' };

@@ -1,6 +1,6 @@
 {
-  "name": "EDU-SMART",
-  "short_name": "EDU-SMART",
+  "name": "AcadeAlert",
+  "short_name": "AcadeAlert",
   "description": "Learning materials, focused study, an academic assistant and deadline-risk planning.",
   "start_url": "/",
   "display": "standalone",

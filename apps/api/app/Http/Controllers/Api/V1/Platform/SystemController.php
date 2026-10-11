@@ -41,8 +41,8 @@ class SystemController extends Controller
 
         return response()->json([
             'status' => $database === 'up' ? 'ok' : 'degraded',
-            'service' => 'edu-smart-api',
-            'version' => config('edusmart.version'),
+            'service' => 'acadealert-api',
+            'version' => config('acadealert.version'),
             'database' => $database,
             'time' => now()->toIso8601String(),
         ], $database === 'up' ? 200 : 503);
@@ -53,10 +53,10 @@ class SystemController extends Controller
         $server = DB::selectOne("SELECT CAST(SERVERPROPERTY('ProductVersion') AS nvarchar(64)) AS version, CAST(SERVERPROPERTY('Edition') AS nvarchar(128)) AS edition, DB_NAME() AS db");
 
         return response()->json([
-            'app' => ['name' => config('app.name'), 'version' => config('edusmart.version'), 'environment' => app()->environment(), 'timezone' => config('app.timezone')],
+            'app' => ['name' => config('app.name'), 'version' => config('acadealert.version'), 'environment' => app()->environment(), 'timezone' => config('app.timezone')],
             'database' => ['driver' => DB::getDriverName(), 'name' => $server->db ?? null, 'server' => trim(($server->edition ?? '').' '.($server->version ?? ''))],
             'firebase' => ['enabled' => $firebase->enabled(), 'emulator' => $firebase->usesEmulator(), 'project_id' => $firebase->projectId(), 'reachable' => $firebase->ping()],
-            'ai_engine' => ['configured' => (string) config('edusmart.ai_engine.url') !== '', 'available' => $reranker->available()],
+            'ai_engine' => ['configured' => (string) config('acadealert.ai_engine.url') !== '', 'available' => $reranker->available()],
             'llm' => ['enabled' => $llm->enabled(), 'model' => $llm->enabled() ? $llm->model() : null],
         ]);
     }
@@ -81,12 +81,12 @@ class SystemController extends Controller
             'assignment_types' => collect(['coursework', 'project', 'lab', 'report', 'presentation', 'exam_prep', 'quiz', 'other'])
                 ->map(fn ($t) => ['value' => $t, 'label' => ucwords(str_replace('_', ' ', $t))])->all(),
             'upload' => [
-                'max_mb' => (int) (config('edusmart.uploads.max_kb') / 1024),
-                'learning_extensions' => config('edusmart.uploads.learning_extensions'),
-                'knowledge_extensions' => config('edusmart.uploads.knowledge_extensions'),
+                'max_mb' => (int) (config('acadealert.uploads.max_kb') / 1024),
+                'learning_extensions' => config('acadealert.uploads.learning_extensions'),
+                'knowledge_extensions' => config('acadealert.uploads.knowledge_extensions'),
             ],
-            'risk_levels_thresholds' => config('edusmart.risk.levels'),
-            'engagement_thresholds' => config('edusmart.study.engagement'),
+            'risk_levels_thresholds' => config('acadealert.risk.levels'),
+            'engagement_thresholds' => config('acadealert.study.engagement'),
         ]);
     }
 }

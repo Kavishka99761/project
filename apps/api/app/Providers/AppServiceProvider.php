@@ -2,9 +2,15 @@
 
 namespace App\Providers;
 
+use App\Services\Platform\DataAudit\DataAuditInstaller;
 use App\Support\Activity\ActivityContext;
+use App\Support\Activity\DatabaseAuditSession;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Events\ConnectionEstablished;
+use Illuminate\Database\Events\MigrationsEnded;
+use Illuminate\Database\Events\MigrationsStarted;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\RateLimiter;
@@ -29,6 +35,29 @@ class AppServiceProvider extends ServiceProvider
         JsonResource::withoutWrapping();
 
         $this->configureRateLimiting();
+        $this->configureDatabaseAudit();
+    }
+
+    /**
+     * Keep the SQL Server audit triggers in step with the schema, and
+     * attribute changes made outside HTTP (artisan, scheduler, queue).
+     */
+    private function configureDatabaseAudit(): void
+    {
+        Event::listen(MigrationsStarted::class, function () {
+            app(DataAuditInstaller::class)->uninstall();
+        });
+        Event::listen(MigrationsEnded::class, function () {
+            app(DataAuditInstaller::class)->install();
+        });
+
+        if ($this->app->runningInConsole()) {
+            Event::listen(ConnectionEstablished::class, function (ConnectionEstablished $event) {
+                $command = $_SERVER['argv'][1] ?? 'console';
+                $source = str_starts_with($command, 'queue:') ? 'queue' : 'console';
+                DatabaseAuditSession::begin($source, connection: $event->connection);
+            });
+        }
     }
 
     private function configureRateLimiting(): void

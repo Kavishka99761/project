@@ -49,7 +49,7 @@ class KnowledgeDocument extends Model
             DB::table('academic_dates')->where('knowledge_document_id', $document->id)
                 ->update(['knowledge_document_id' => null]);
             if ($document->file_path) {
-                Storage::disk(config('edusmart.uploads.disk'))->delete($document->file_path);
+                Storage::disk(config('acadealert.uploads.disk'))->delete($document->file_path);
             }
         });
     }
@@ -57,7 +57,7 @@ class KnowledgeDocument extends Model
     public function hasFile(): bool
     {
         return $this->file_path !== null
-            && Storage::disk(config('edusmart.uploads.disk'))->exists($this->file_path);
+            && Storage::disk(config('acadealert.uploads.disk'))->exists($this->file_path);
     }
 
     public function module(): BelongsTo { return $this->belongsTo(Module::class); }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Optional OpenAI-compatible chat-completions client.
  *
- * Disabled by default: EDU-SMART's summaries and chatbot answers are produced
+ * Disabled by default: AcadeAlert's summaries and chatbot answers are produced
  * by the built-in NLP engine. When LLM_ENABLED=true the assistant uses the
  * model only to *phrase* answers from retrieved, cited passages — retrieval,
  * grounding and citations always stay local and deterministic.
@@ -17,12 +17,12 @@ class LlmClient
 {
     public function enabled(): bool
     {
-        return (bool) config('edusmart.llm.enabled') && (string) config('edusmart.llm.api_key') !== '';
+        return (bool) config('acadealert.llm.enabled') && (string) config('acadealert.llm.api_key') !== '';
     }
 
     public function model(): string
     {
-        return (string) config('edusmart.llm.model');
+        return (string) config('acadealert.llm.model');
     }
 
     /**
@@ -35,10 +35,10 @@ class LlmClient
         }
 
         try {
-            $response = Http::withToken((string) config('edusmart.llm.api_key'))
-                ->timeout((int) config('edusmart.llm.timeout', 30))
+            $response = Http::withToken((string) config('acadealert.llm.api_key'))
+                ->timeout((int) config('acadealert.llm.timeout', 30))
                 ->acceptJson()
-                ->post(rtrim((string) config('edusmart.llm.base_url'), '/').'/chat/completions', [
+                ->post(rtrim((string) config('acadealert.llm.base_url'), '/').'/chat/completions', [
                     'model' => $this->model(),
                     'messages' => $messages,
                     'max_tokens' => $maxTokens,

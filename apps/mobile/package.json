@@ -1,7 +1,7 @@
 {
-  "name": "edu-smart-mobile",
+  "name": "acadealert-mobile",
   "version": "1.0.0",
-  "description": "EDU-SMART mobile app (React Native + Expo) for the four-module academic platform.",
+  "description": "AcadeAlert mobile app (React Native + Expo) for the four-module academic platform.",
   "main": "index.js",
   "scripts": {
     "start": "expo start",

@@ -1,4 +1,4 @@
-# EDU-SMART · Backend Setup (Laravel 11)
+# AcadeAlert · Backend Setup (Laravel 11)
 
 REST API powering both the web and mobile clients. Laravel 11 slim skeleton,
 Sanctum token auth, MySQL 8.
@@ -143,7 +143,7 @@ curl http://localhost:8000/api/health
 Expected:
 
 ```json
-{"status":"ok","service":"edu-smart-api","time":"2026-09-13T09:14:02+00:00"}
+{"status":"ok","service":"acadealert-api","time":"2026-09-13T09:14:02+00:00"}
 ```
 
 Full test script (login → dashboard → rank → chat):
@@ -163,7 +163,7 @@ Full test script (login → dashboard → rank → chat):
 | `FRONTEND_URL` | `http://localhost:5173` | Origin allowed by `config/cors.php` |
 | `DB_HOST` | `127.0.0.1` | |
 | `DB_PORT` | `3306` | |
-| `DB_DATABASE` | `edu_smart` | Created by `schema.sql`; by `migrate` otherwise |
+| `DB_DATABASE` | `acadealert` | Created by `schema.sql`; by `migrate` otherwise |
 | `DB_USERNAME` | `root` | |
 | `DB_PASSWORD` | *(empty)* | Set your MySQL password |
 | `SANCTUM_STATEFUL_DOMAINS` | `localhost:5173,127.0.0.1:5173,localhost:19006` | Comma-separated, no `http://` |
@@ -180,7 +180,7 @@ Full test script (login → dashboard → rank → chat):
 | `MAIL_MAILER` | `log` | No SMTP credentials needed to boot |
 | `FILESYSTEM_DISK` | `local` | Uploads land in `storage/app/` |
 
-The app therefore boots against **only** the EDU-SMART schema tables.
+The app therefore boots against **only** the AcadeAlert schema tables.
 
 ---
 
@@ -190,7 +190,7 @@ Seeded by `DatabaseSeeder`:
 
 | Email | Password |
 | ----- | -------- |
-| `student@edusmart.lk` | `password` |
+| `student@acadealert.lk` | `password` |
 
 The seeder also creates 4 subject modules, 6 learning documents, 3 academic
 documents with 7 chunks, 4 academic dates, 4 assignments, 7 study sessions with
@@ -312,7 +312,7 @@ backend-laravel/
 | `Class "PDO" not found` | Enable `extension=pdo_mysql` in `php.ini`, restart PHP |
 | `could not find driver` | Same as above — the MySQL PDO driver is missing |
 | `Access denied for user 'root'@'localhost'` | Wrong `DB_USERNAME`/`DB_PASSWORD` in `.env` |
-| `Unknown database 'edu_smart'` | Run `migrate` (creates it) or import `schema.sql` (creates it) |
+| `Unknown database 'acadealert'` | Run `migrate` (creates it) or import `schema.sql` (creates it) |
 | `Base table or view already exists: users` | You mixed both provisioning paths → `php artisan migrate:fresh --seed` |
 | `No application encryption key has been specified` | `php artisan key:generate` |
 | `Target class [App\Http\Controllers\…] does not exist` | `composer dump-autoload` |

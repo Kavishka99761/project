@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * SQL Server reporting layer — views and stored procedures that make the
- * EDU-SMART data easy to explore and report on from SQL Server Management
+ * AcadeAlert data easy to explore and report on from SQL Server Management
  * Studio (SSMS), Excel or Power BI without touching application code.
  *
  *   EXEC dbo.sp_student_overview @UserId = 1;

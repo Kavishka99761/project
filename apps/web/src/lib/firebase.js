@@ -14,7 +14,7 @@ export async function connectRealtime(config) {
 
   if (!session || session.projectId !== config.project_id) {
     await disconnectRealtime();
-    const app = initializeApp({ ...FIREBASE_WEB_CONFIG, projectId: config.project_id }, `edusmart-${Date.now()}`);
+    const app = initializeApp({ ...FIREBASE_WEB_CONFIG, projectId: config.project_id }, `acadealert-${Date.now()}`);
     const auth = getAuth(app);
     const db = getFirestore(app);
     if (config.emulators?.auth) {

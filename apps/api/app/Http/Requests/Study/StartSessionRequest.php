@@ -16,7 +16,7 @@ class StartSessionRequest extends ApiRequest
         return [
             'module_id' => ['nullable', 'integer', $this->owned('modules')],
             'activity' => ['required', Rule::enum(StudyActivity::class)],
-            'planned_minutes' => ['required', 'integer', 'between:5,'.config('edusmart.study.max_session_minutes')],
+            'planned_minutes' => ['required', 'integer', 'between:5,'.config('acadealert.study.max_session_minutes')],
             'goal' => ['nullable', 'string', 'max:255'],
             'assignment_id' => ['nullable', 'integer', $this->owned('assignments')],
             'document_id' => ['nullable', 'integer', $this->owned('documents')],

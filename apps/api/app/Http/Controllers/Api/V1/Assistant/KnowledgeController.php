@@ -100,7 +100,7 @@ class KnowledgeController extends Controller
     {
         abort_unless($knowledge->hasFile(), 404, 'The original file is not available.');
 
-        return Storage::disk(config('edusmart.uploads.disk'))->response($knowledge->file_path, $knowledge->original_name ?? basename($knowledge->file_path), [
+        return Storage::disk(config('acadealert.uploads.disk'))->response($knowledge->file_path, $knowledge->original_name ?? basename($knowledge->file_path), [
             'Content-Type' => $knowledge->mime_type ?? 'application/octet-stream',
             'Cache-Control' => 'private, max-age=600',
             'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors *",

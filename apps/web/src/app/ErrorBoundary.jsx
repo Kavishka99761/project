@@ -12,7 +12,7 @@ export class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('EDU-SMART render error', error, info);
+    console.error('AcadeAlert render error', error, info);
   }
 
   render() {

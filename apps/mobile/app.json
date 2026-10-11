@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "EDU-SMART",
-    "slug": "edu-smart-mobile",
+    "name": "AcadeAlert",
+    "slug": "acadealert-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -17,7 +17,7 @@
       "bundleIdentifier": "lk.AcadAlert.mobile"
     },
     "android": {
-      "package": "lk.edusmart.mobile",
+      "package": "lk.acadealert.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#6366f1"
       }

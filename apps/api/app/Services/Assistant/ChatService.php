@@ -31,9 +31,9 @@ class ChatService
         $question = trim($question);
         $scope ??= $conversation?->scope ?? [];
 
-        $hits = $this->retriever->search($user->id, $question, $scope, (int) config('edusmart.assistant.top_k', 5) + 3);
+        $hits = $this->retriever->search($user->id, $question, $scope, (int) config('acadealert.assistant.top_k', 5) + 3);
         $reranked = $this->reranker->rerank($question, $hits);
-        $hits = array_slice($reranked['hits'], 0, (int) config('edusmart.assistant.top_k', 5));
+        $hits = array_slice($reranked['hits'], 0, (int) config('acadealert.assistant.top_k', 5));
 
         $result = $this->composer->compose(
             $question,

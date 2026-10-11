@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Academic Assistant Module (Owner: Kavishka)
+   AcadeAlert — Academic Assistant Module (Owner: Kavishka)
    RAG-style chatbot over an academic knowledge base, document search,
    academic date extraction and calendar integration.
 

@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class DispatchReminders extends Command
 {
-    protected $signature = 'edusmart:reminders';
+    protected $signature = 'acadealert:reminders';
 
     protected $description = 'Send due calendar, deadline, overdue and study-session reminders';
 

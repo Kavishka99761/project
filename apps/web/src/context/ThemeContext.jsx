@@ -2,9 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { flushSync } from 'react-dom';
 
 const ThemeContext = createContext(null);
-const KEY = 'edusmart.theme';
-const MOTION_KEY = 'edusmart.reduceMotion';
-const GLASS_KEY = 'edusmart.glass';
+const KEY = 'acadealert.theme';
+const MOTION_KEY = 'acadealert.reduceMotion';
+const GLASS_KEY = 'acadealert.glass';
 
 const readStorage = (key, fallback) => {
   try {

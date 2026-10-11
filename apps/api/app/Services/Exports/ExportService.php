@@ -53,7 +53,7 @@ class ExportService
         [$headers, $rows] = $this->table($dataset, $records);
 
         $title = $dataset['label'];
-        $base = 'edu-smart-'.str_replace('_', '-', $key).'-'.now()->format('Ymd-His');
+        $base = 'acadealert-'.str_replace('_', '-', $key).'-'.now()->format('Ymd-His');
 
         $file = match ($format) {
             'json' => new ExportFile("{$base}.json", 'application/json', json_encode([
@@ -99,7 +99,7 @@ class ExportService
             ];
         }
         $total = array_sum(array_map(fn ($s) => count($s['rows']), $sections));
-        $base = 'edu-smart-backup-'.now()->format('Ymd-His');
+        $base = 'acadealert-backup-'.now()->format('Ymd-His');
 
         $file = match ($format) {
             'json' => new ExportFile("{$base}.json", 'application/json', json_encode([
@@ -173,8 +173,8 @@ class ExportService
     private function meta(User $user, string $title, int $rows, ?string $from = null, ?string $to = null): array
     {
         return [
-            'application' => 'EDU-SMART',
-            'version' => config('edusmart.version'),
+            'application' => 'AcadeAlert',
+            'version' => config('acadealert.version'),
             'dataset' => $title,
             'exported_at' => now()->toIso8601String(),
             'exported_by' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email],
@@ -224,17 +224,17 @@ class ExportService
     {
         $spreadsheet = new Spreadsheet;
         $spreadsheet->getProperties()
-            ->setCreator('EDU-SMART')
+            ->setCreator('AcadeAlert')
             ->setLastModifiedBy($user->name)
-            ->setTitle($summary ? 'EDU-SMART account backup' : $sheets[0]['title'])
+            ->setTitle($summary ? 'AcadeAlert account backup' : $sheets[0]['title'])
             ->setSubject('Exported from Microsoft SQL Server')
-            ->setCompany('EDU-SMART');
+            ->setCompany('AcadeAlert');
         $spreadsheet->removeSheetByIndex(0);
 
         if ($summary) {
             $sheet = $spreadsheet->createSheet();
             $sheet->setTitle('Summary');
-            $sheet->fromArray([['EDU-SMART account backup'], ['Student', $user->name.' <'.$user->email.'>'], ['Exported', now()->format('Y-m-d H:i')], [], ['Dataset', 'Rows']]);
+            $sheet->fromArray([['AcadeAlert account backup'], ['Student', $user->name.' <'.$user->email.'>'], ['Exported', now()->format('Y-m-d H:i')], [], ['Dataset', 'Rows']]);
             $r = 6;
             foreach ($sheets as $s) {
                 $sheet->fromArray([[$s['title'], count($s['rows'])]], null, 'A'.$r++);

@@ -805,3 +805,36 @@ a { color: var(--es-primary); }
   .tl-item { position: relative; padding-bottom: 16px; }
   .tl-dot { position: absolute; left: -22px; top: 3px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--es-glass-strong); background: var(--tl-color, var(--es-primary)); box-shadow: 0 0 0 1px var(--es-divider); }
 }
+
+// Audit trail (Activity log) -------------------------------------------------------------------
+.audit-diff {
+  tr.is-changed td { background: color-mix(in srgb, var(--es-warning) 7%, transparent); }
+  tr.is-changed td.old { color: var(--es-critical-ink); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--es-critical) 50%, transparent); }
+  tr.is-changed td.new { color: var(--es-good-ink); font-weight: 600; }
+}
+
+.audit-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  border-left: 2px solid var(--es-divider);
+
+  li {
+    position: relative;
+    padding: 0.35rem 0 0.9rem 0.6rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(-1.1rem - 6px);
+      top: 0.7rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--es-surface, #fff);
+      border: 2px solid var(--es-text-3);
+    }
+
+    &.current::before { background: var(--es-accent, currentColor); border-color: var(--es-accent, currentColor); }
+  }
+}

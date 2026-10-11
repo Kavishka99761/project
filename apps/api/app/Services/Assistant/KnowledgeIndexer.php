@@ -63,8 +63,8 @@ class KnowledgeIndexer
      */
     public function chunk(array $pages): array
     {
-        $min = (int) config('edusmart.assistant.chunk_min_words', 60);
-        $max = (int) config('edusmart.assistant.chunk_max_words', 200);
+        $min = (int) config('acadealert.assistant.chunk_min_words', 60);
+        $max = (int) config('acadealert.assistant.chunk_max_words', 200);
 
         $chunks = [];
         $section = null;

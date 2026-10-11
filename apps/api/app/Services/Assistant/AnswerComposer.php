@@ -32,7 +32,7 @@ class AnswerComposer
     {
         $this->originalTerms = $originalTerms;
         $type = $this->questionType($question);
-        $threshold = (float) config('edusmart.assistant.min_relevance', 0.18);
+        $threshold = (float) config('acadealert.assistant.min_relevance', 0.18);
         $hits = array_values(array_filter($hits, fn ($h) => $h['relevance'] >= $threshold * 0.6));
 
         if ($hits === [] || $hits[0]['relevance'] < $threshold) {

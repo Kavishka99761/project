@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Mock Data Layer
+   AcadeAlert — Mock Data Layer
    Simulates the Laravel REST API so the web app runs standalone (no backend).
    To go live, replace reads in module JS with fetch(API_BASE + '/...').
    Mirrors the SQL schema in backend-laravel/database/sql/schema.sql
@@ -26,7 +26,7 @@ ES.isoDate = function (offsetDays) {
 ES.currentUser = {
   id: 1,
   name: "Ayesha Perera",
-  email: "student@edusmart.lk",
+  email: "student@acadealert.lk",
   initials: "AP",
   program: "BSc (Hons) Software Engineering",
   year: "Year 2 · Semester 1",

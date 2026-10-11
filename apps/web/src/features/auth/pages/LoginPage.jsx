@@ -42,7 +42,7 @@ export default function LoginPage() {
     <AuthLayout
       title="Welcome back"
       subtitle="Sign in to continue to your study workspace."
-      footer={<>New to EDU-SMART? <Link to="/register" className="fw-bold">Create an account</Link></>}
+      footer={<>New to AcadeAlert? <Link to="/register" className="fw-bold">Create an account</Link></>}
     >
       <form onSubmit={submit} noValidate>
         <div className="mb-3">

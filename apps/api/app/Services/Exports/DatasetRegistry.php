@@ -3,9 +3,11 @@
 namespace App\Services\Exports;
 
 use App\Enums\ModuleKey;
+use App\Models\DataChange;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Every dataset the student can download, with its columns. Column values
@@ -20,7 +22,7 @@ class DatasetRegistry
         $date = fn ($value) => $value?->format('Y-m-d H:i');
         $day = fn ($value) => $value?->format('Y-m-d');
 
-        return [
+        $datasets = [
             /* ---------------- Platform ---------------- */
             'profile' => [
                 'label' => 'Profile & settings', 'module' => ModuleKey::Platform, 'date_column' => null,
@@ -59,6 +61,21 @@ class DatasetRegistry
                     'Duration (ms)' => fn ($r) => $r->duration_ms, 'IP address' => fn ($r) => $r->ip_address,
                 ],
                 'json' => fn ($r) => $r->toArray(),
+            ],
+            'data_changes' => [
+                'label' => 'Database changes (row-level audit)', 'module' => ModuleKey::Platform, 'date_column' => 'changed_at',
+                'query' => fn (User $u) => DataChange::visibleTo($u)->with('activity:id,request_id,action')->orderByDesc('id'),
+                'columns' => [
+                    'Date' => fn ($r) => $date($r->changed_at), 'Operation' => fn ($r) => strtoupper($r->operationName()),
+                    'Table' => fn ($r) => $r->table_name, 'Record' => fn ($r) => $r->record_id, 'Summary' => fn ($r) => $r->summary(),
+                    'Changed columns' => fn ($r) => $r->changed_columns, 'Source' => fn ($r) => $r->source,
+                    'API action' => fn ($r) => $r->activity?->action,
+                ],
+                'json' => fn ($r) => [
+                    'id' => $r->id, 'changed_at' => $r->changed_at?->toIso8601String(), 'operation' => $r->operationName(),
+                    'table' => $r->table_name, 'record_id' => $r->record_id, 'changed_columns' => $r->changedColumns(),
+                    'source' => $r->source, 'request_id' => $r->request_id, 'old_values' => $r->old_values, 'new_values' => $r->new_values,
+                ],
             ],
             'calendar' => [
                 'label' => 'Calendar events', 'module' => ModuleKey::Platform, 'date_column' => 'starts_at',
@@ -211,6 +228,13 @@ class DatasetRegistry
                 ],
             ],
         ];
+
+        // The row-level audit table is created by SQL Server triggers only.
+        if (DB::getDriverName() !== 'sqlsrv') {
+            unset($datasets['data_changes']);
+        }
+
+        return $datasets;
     }
 
     /** @return array<string, mixed>|null */

@@ -1,4 +1,4 @@
-# EDU-SMART · Mobile Setup (React Native + Expo)
+# AcadeAlert · Mobile Setup (React Native + Expo)
 
 Expo SDK 51 · React Native 0.74 · React Navigation 6. **Offline-first** — the app
 is fully usable with no backend running.
@@ -61,7 +61,7 @@ npm start -- --clear
 
 | Mode | Credentials |
 | ---- | ----------- |
-| Backend running | `student@edusmart.lk` / `password` (the seeded Laravel user) |
+| Backend running | `student@acadealert.lk` / `password` (the seeded Laravel user) |
 | Backend **not** running | Anything — the app auto signs in as the demo student |
 
 The header badge always tells you which mode you are in:

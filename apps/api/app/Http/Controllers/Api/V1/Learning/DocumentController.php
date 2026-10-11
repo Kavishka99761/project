@@ -105,7 +105,7 @@ class DocumentController extends Controller
     {
         $data = $request->validated();
         if (isset($data['content'])) {
-            abort_unless($document->kind === DocumentKind::Note, 422, 'Only lecture notes written in EDU-SMART can be edited.');
+            abort_unless($document->kind === DocumentKind::Note, 422, 'Only lecture notes written in AcadeAlert can be edited.');
             $this->documents->updateNoteContent($document, $data['content']);
             unset($data['content']);
         }
@@ -137,7 +137,7 @@ class DocumentController extends Controller
         abort_unless($document->hasFile(), 404, 'The original file is not available.');
         $disposition = $request->boolean('download') ? 'attachment' : 'inline';
 
-        return Storage::disk(config('edusmart.uploads.disk'))->response($document->file_path, $document->original_name ?? basename($document->file_path), [
+        return Storage::disk(config('acadealert.uploads.disk'))->response($document->file_path, $document->original_name ?? basename($document->file_path), [
             'Content-Type' => $document->mime_type ?? 'application/octet-stream',
             'Cache-Control' => 'private, max-age=600',
             'Content-Security-Policy' => "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors *",

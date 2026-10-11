@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Common Calendar (shared service)
+   AcadeAlert — Common Calendar (shared service)
    Merges events from all four modules into one month view.
    ========================================================================== */
 

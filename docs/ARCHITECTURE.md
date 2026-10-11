@@ -1,4 +1,4 @@
-# EDU-SMART · Architecture
+# AcadeAlert · Architecture
 
 This document explains how the platform is put together, where each module's
 boundaries are, and why the design decisions were made.
@@ -36,7 +36,7 @@ boundaries are, and why the design decisions were made.
             └──────────────┬───────────────┘
                            ▼
             ┌──────────────────────────────┐
-            │   MySQL 8 — `edu_smart`      │
+            │   MySQL 8 — `acadealert`      │
             │   16 tables + 1 view         │
             └──────────────────────────────┘
 ```
@@ -217,7 +217,7 @@ prefixed with `/api` — do not add the prefix again in the route definitions.
 | `QUEUE_CONNECTION` | `sync` | No `jobs` / `failed_jobs` tables, no queue worker |
 | `MAIL_MAILER` | `log` | No SMTP credentials needed to boot |
 
-The result: the app boots against **only** the EDU-SMART schema tables.
+The result: the app boots against **only** the AcadeAlert schema tables.
 
 ### 5.3 Route ordering matters
 

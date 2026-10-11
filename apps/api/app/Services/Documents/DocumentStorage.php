@@ -65,6 +65,6 @@ class DocumentStorage
 
     public function disk(): string
     {
-        return config('edusmart.uploads.disk', 'local');
+        return config('acadealert.uploads.disk', 'local');
     }
 }

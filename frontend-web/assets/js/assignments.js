@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Assignment & Deadline Risk Module (Owner: Jithmi)
+   AcadeAlert — Assignment & Deadline Risk Module (Owner: Jithmi)
    Assignment CRUD, workload analysis, risk prediction & explanation,
    priority ranking, daily-hours recommendation and what-if scenarios.
    Integration: consumes study capacity from Pasindu's productivity data.

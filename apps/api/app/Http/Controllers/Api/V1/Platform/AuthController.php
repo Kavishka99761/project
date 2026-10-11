@@ -45,7 +45,7 @@ class AuthController extends Controller
         });
 
         activity()->asUser($user->id)->action('auth.registered')->describe("Created account {$user->email}")->on($user);
-        $this->notifications->send($user, ModuleKey::Platform, 'Welcome to EDU-SMART, '.Str::before($user->name, ' ').'!',
+        $this->notifications->send($user, ModuleKey::Platform, 'Welcome to AcadeAlert, '.Str::before($user->name, ' ').'!',
             'Start by adding your modules, then upload lecture notes, academic documents and assignments.',
             NotificationType::Success, '/modules', 'stars');
         $this->firebase->mirrorProfile($user);
@@ -67,8 +67,8 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['email' => 'These credentials do not match our records.']);
         }
 
-        $user->forceFill(['last_login_at' => now(), 'last_login_ip' => $request->ip()])->save();
         activity()->asUser($user->id)->action('auth.login')->describe('Signed in from '.$this->deviceName($request))->on($user);
+        $user->forceFill(['last_login_at' => now(), 'last_login_ip' => $request->ip()])->save();
         $this->firebase->mirrorProfile($user);
 
         return response()->json($this->tokenPayload($user, $request));
@@ -102,7 +102,7 @@ class AuthController extends Controller
             $token = Str::random(64);
             DB::table('password_reset_tokens')->updateOrInsert(['email' => $email], ['token' => Hash::make($token), 'created_at' => now()]);
             $link = rtrim(config('app.frontend_url'), '/').'/reset-password?token='.$token.'&email='.urlencode($email);
-            logger()->info("EDU-SMART password reset link for {$email}: {$link}");
+            logger()->info("AcadeAlert password reset link for {$email}: {$link}");
             activity()->asUser($user->id)->action('auth.password_reset_requested')->describe('Requested a password reset link');
 
             if (config('app.debug')) {

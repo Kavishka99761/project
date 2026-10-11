@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 
 /**
- * Base URL of the Laravel API (backend-laravel). Override at runtime via
+ * Base URL of the Laravel API (apps/api). Override at runtime via
  * app.json -> expo.extra.apiBase, or change the fallback below.
  *
  * Running on a physical device? Replace `localhost` with your computer's LAN IP

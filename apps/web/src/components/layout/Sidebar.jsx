@@ -35,7 +35,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onNavigate }) {
       <NavLink to="/dashboard" className="sidebar-brand" onClick={onNavigate}>
         <span className="brand-mark"><i className="bi bi-mortarboard-fill" aria-hidden="true" /></span>
         <span className="brand-text">
-          <span className="brand-name">EDU-SMART</span>
+          <span className="brand-name">AcadeAlert</span>
           <span className="brand-sub">Study smarter</span>
         </span>
       </NavLink>

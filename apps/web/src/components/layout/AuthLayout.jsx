@@ -22,7 +22,7 @@ export function AuthLayout({ title, subtitle, children, footer }) {
                 <i className="bi bi-mortarboard-fill" aria-hidden="true" />
               </span>
               <span>
-                <span className="d-block fs-4 fw-800" style={{ color: 'var(--es-text)' }}>EDU-SMART</span>
+                <span className="d-block fs-4 fw-800" style={{ color: 'var(--es-text)' }}>AcadeAlert</span>
                 <span className="d-block small text-3 fw-semibold">Your academic co-pilot</span>
               </span>
             </Link>
@@ -47,7 +47,7 @@ export function AuthLayout({ title, subtitle, children, footer }) {
             <div className="glass-strong p-4 p-md-5" style={{ borderRadius: 28 }}>
               <div className="d-lg-none d-flex align-items-center gap-2 mb-4">
                 <span className="d-grid rounded-3 text-white" style={{ width: 40, height: 40, placeItems: 'center', background: 'linear-gradient(135deg, #6366f1, var(--es-learning))' }}><i className="bi bi-mortarboard-fill" /></span>
-                <span className="fw-800 fs-5">EDU-SMART</span>
+                <span className="fw-800 fs-5">AcadeAlert</span>
               </div>
               <h2 className="fw-800 mb-1" style={{ letterSpacing: '-0.02em' }}>{title}</h2>
               {subtitle && <p className="text-2 mb-4">{subtitle}</p>}

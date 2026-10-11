@@ -5,7 +5,7 @@ const MODULES = {
   study: { name: 'Study & engagement', owner: 'Pasindu' },
   assistant: { name: 'Academic assistant', owner: 'Kavishka' },
   assignments: { name: 'Assignments & risk', owner: 'Jithmi' },
-  platform: { name: 'EDU-SMART platform', owner: null },
+  platform: { name: 'AcadeAlert platform', owner: null },
 };
 
 /** Page title block with module eyebrow, subtitle and actions. */

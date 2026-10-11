@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| EDU-SMART domain configuration
+| AcadeAlert domain configuration
 |--------------------------------------------------------------------------
 | Tunables for the four feature modules and the shared platform services.
 | Everything here has a sensible default so the platform runs with an empty
@@ -86,7 +86,7 @@ return [
     */
     'firebase' => [
         'enabled' => (bool) env('FIREBASE_ENABLED', false),
-        'project_id' => env('FIREBASE_PROJECT_ID', 'demo-edusmart'),
+        'project_id' => env('FIREBASE_PROJECT_ID', 'demo-acadealert'),
         'credentials' => env('FIREBASE_CREDENTIALS'),
         'firestore_emulator_host' => env('FIRESTORE_EMULATOR_HOST'),
         'auth_emulator_host' => env('FIREBASE_AUTH_EMULATOR_HOST'),
@@ -121,5 +121,7 @@ return [
     */
     'activity' => [
         'retention_days' => 365,
+        // Row-level audit (dbo.data_change_log, written by SQL Server triggers).
+        'data_change_retention_days' => (int) env('DATA_CHANGE_RETENTION_DAYS', 365),
     ],
 ];

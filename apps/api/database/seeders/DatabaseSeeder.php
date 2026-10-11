@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * `php artisan migrate --seed` → a complete demo semester
- * (login: student@edusmart.lk / password).
+ * (login: student@acadealert.lk / password).
  *
  * Model events stay enabled on purpose: the services that build the demo
  * (extraction, summaries, risk, reminders) rely on them.

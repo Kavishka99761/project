@@ -5,7 +5,7 @@
 
 @section('content')
     <h1>Account backup</h1>
-    <p class="muted">Every dataset stored for {{ $user->name }} across the four EDU-SMART modules — {{ number_format($total) }} records in total.</p>
+    <p class="muted">Every dataset stored for {{ $user->name }} across the four AcadeAlert modules — {{ number_format($total) }} records in total.</p>
 
     <table class="data">
         <thead><tr><th>Dataset</th><th>Module</th><th style="width: 60px">Records</th></tr></thead>

@@ -22,7 +22,7 @@ class SettingsResource extends JsonResource
             'short_break_minutes' => $this->short_break_minutes,
             'long_break_minutes' => $this->long_break_minutes,
             'sessions_before_long_break' => $this->sessions_before_long_break,
-            'availability' => $this->availability ?: config('edusmart.risk.default_availability'),
+            'availability' => $this->availability ?: config('acadealert.risk.default_availability'),
             'auto_summarize' => $this->auto_summarize,
             'default_summary_length' => $this->default_summary_length,
             'notify_in_app' => $this->notify_in_app,

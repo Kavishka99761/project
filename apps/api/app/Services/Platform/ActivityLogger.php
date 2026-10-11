@@ -79,6 +79,7 @@ class ActivityLogger
             'status_code' => $status,
             'duration_ms' => (int) round((microtime(true) - $startedAt) * 1000),
             'ip_address' => $request->ip(),
+            'request_id' => $context->requestId(),
             'user_agent' => Str::limit((string) $request->userAgent(), 495, ''),
         ]);
 

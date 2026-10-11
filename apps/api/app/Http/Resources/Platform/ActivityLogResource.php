@@ -24,6 +24,7 @@ class ActivityLogResource extends JsonResource
             'status_code' => $this->status_code,
             'duration_ms' => $this->duration_ms,
             'ip_address' => $this->ip_address,
+            'request_id' => $this->request_id,
             'user_agent' => $this->user_agent,
             'created_at' => $this->created_at?->toIso8601String(),
         ];

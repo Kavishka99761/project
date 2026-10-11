@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Platform\ActivityController;
 use App\Http\Controllers\Api\V1\Platform\AuthController;
 use App\Http\Controllers\Api\V1\Platform\CalendarController;
 use App\Http\Controllers\Api\V1\Platform\DashboardController;
+use App\Http\Controllers\Api\V1\Platform\DataChangeController;
 use App\Http\Controllers\Api\V1\Platform\ExportController;
 use App\Http\Controllers\Api\V1\Platform\FirebaseController;
 use App\Http\Controllers\Api\V1\Platform\ModuleController;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| EDU-SMART API v1  —  every route is prefixed with /api/v1
+| AcadeAlert API v1  —  every route is prefixed with /api/v1
 |--------------------------------------------------------------------------
 |   Common Platform Layer : auth, profile, settings, modules, notifications,
 |                           activity (audit), search, calendar, exports, trash
@@ -90,6 +91,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
     Route::get('activity/stats', [ActivityController::class, 'stats'])->name('activity.stats');
+
+    // Row-level audit written by the SQL Server triggers (dbo.data_change_log).
+    Route::prefix('data-changes')->name('data-changes.')->controller(DataChangeController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('stats', 'stats')->name('stats');
+        Route::get('history/{table}/{recordId}', 'history')->name('history');
+        Route::get('{id}', 'show')->whereNumber('id')->name('show');
+    });
 
     Route::get('search', [SearchController::class, 'search'])->name('search');
     Route::get('search/history', [SearchController::class, 'history'])->name('search.history');

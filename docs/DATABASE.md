@@ -1,6 +1,6 @@
-# EDU-SMART · Database
+# AcadeAlert · Database
 
-MySQL 8.0+ · database `edu_smart` · `utf8mb4` / `utf8mb4_unicode_ci` · InnoDB.
+MySQL 8.0+ · database `acadealert` · `utf8mb4` / `utf8mb4_unicode_ci` · InnoDB.
 
 **16 tables** (14 domain + 2 Laravel infrastructure) and **1 view**.
 
@@ -45,7 +45,7 @@ migration) — **do not create that table yourself**.
 mysql -u root -p < backend-laravel/database/sql/schema.sql
 ```
 
-Creates the `edu_smart` database, all 16 tables, the integration foreign keys and
+Creates the `acadealert` database, all 16 tables, the integration foreign keys and
 the `v_latest_risk` view in one pass.
 
 Then seed the demo data separately:
@@ -308,7 +308,7 @@ disabled, then creates:
 
 | Data | Volume |
 | ---- | ------ |
-| Demo student | `student@edusmart.lk` / `password` |
+| Demo student | `student@acadealert.lk` / `password` |
 | Subject modules | 4 |
 | Academic documents + chunks | 3 documents, 7 chunks |
 | Academic dates | 4 |

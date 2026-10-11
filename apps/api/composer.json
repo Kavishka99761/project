@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "edu-smart/api",
+    "name": "acadealert/api",
     "type": "project",
-    "description": "EDU-SMART REST API - Laravel 12 on Microsoft SQL Server, powering the Learning, Study, Academic Assistant and Assignment Risk modules.",
-    "keywords": ["laravel", "edu-smart", "sql-server", "api", "education"],
+    "description": "AcadeAlert REST API - Laravel 12 on Microsoft SQL Server, powering the Learning, Study, Academic Assistant and Assignment Risk modules.",
+    "keywords": ["laravel", "acadealert", "sql-server", "api", "education"],
     "license": "proprietary",
     "require": {
         "php": "^8.2",

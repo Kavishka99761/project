@@ -55,7 +55,7 @@ function FullScreenLoader() {
     <div className="min-vh-100 d-grid" style={{ placeItems: 'center' }}>
       <div className="text-center">
         <Spinner size="lg" className="text-primary" />
-        <div className="small text-3 mt-3 fw-semibold">Loading EDU-SMART…</div>
+        <div className="small text-3 mt-3 fw-semibold">Loading AcadeAlert…</div>
       </div>
     </div>
   );

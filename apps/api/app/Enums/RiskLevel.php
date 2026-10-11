@@ -18,7 +18,7 @@ enum RiskLevel: string
 
     public static function fromScore(int $score): self
     {
-        $levels = config('edusmart.risk.levels');
+        $levels = config('acadealert.risk.levels');
 
         return match (true) {
             $score >= $levels['critical'] => self::Critical,

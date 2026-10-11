@@ -100,7 +100,7 @@ return [
         ],
 
         /*
-         | Microsoft SQL Server (primary system of record for EDU-SMART).
+         | Microsoft SQL Server (primary system of record for AcadeAlert).
          | Defaults target SQL Server Express LocalDB with Windows authentication
          | so it works out of the box and can be browsed in SSMS at
          | "(localdb)\MSSQLLocalDB". Leave DB_USERNAME empty for Windows auth, or
@@ -111,7 +111,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '(localdb)\MSSQLLocalDB'),
             'port' => env('DB_PORT', ''),
-            'database' => env('DB_DATABASE', 'EduSmart'),
+            'database' => env('DB_DATABASE', 'AcadeAlert'),
             'username' => env('DB_USERNAME') ?: null,
             'password' => env('DB_PASSWORD') ?: null,
             'charset' => env('DB_CHARSET', 'utf8'),
@@ -119,7 +119,7 @@ return [
             'prefix_indexes' => true,
             'encrypt' => env('DB_ENCRYPT', 'yes'),
             'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
-            'appname' => 'EduSmartApi',
+            'appname' => 'AcadeAlertApi',
             'login_timeout' => (int) env('DB_LOGIN_TIMEOUT', 15),
         ],
 

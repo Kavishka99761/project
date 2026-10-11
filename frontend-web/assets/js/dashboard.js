@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Overview Dashboard
+   AcadeAlert — Overview Dashboard
    Aggregates a snapshot from all four modules and shows the integration flow.
    Owner: Common Platform Layer (central hub)
    ========================================================================== */
@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  ES.initPage({ active: "dashboard.html", title: "Overview", subtitle: "EDU-SMART central hub" });
+  ES.initPage({ active: "dashboard.html", title: "Overview", subtitle: "AcadeAlert central hub" });
 
   /* ---------- Greeting ---------- */
   const hour = new Date().getHours();

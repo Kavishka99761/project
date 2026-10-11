@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Learning Materials Module (Owner: Bethmi)
+   AcadeAlert — Learning Materials Module (Owner: Bethmi)
    Document management: upload, view, search, filter, rename, delete, details.
    Summary management: generate (short/medium/detailed), keywords, save, download.
    ========================================================================== */

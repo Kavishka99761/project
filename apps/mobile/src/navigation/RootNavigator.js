@@ -84,7 +84,7 @@ export default function RootNavigator() {
     return (
       <View style={styles.boot}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.bootText}>EDU-SMART</Text>
+        <Text style={styles.bootText}>AcadeAlert</Text>
       </View>
     );
   }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title') · EDU-SMART</title>
+    <title>@yield('title') · AcadeAlert</title>
     <style>
         @page { margin: 92px 36px 64px 36px; }
         * { font-family: "DejaVu Sans", sans-serif; }
@@ -39,7 +39,7 @@
     <div class="brand">EDU<span>-SMART</span></div>
     <div class="meta">{{ $user->name }} · {{ $user->email }} · Generated {{ now()->format('d M Y, H:i') }} · Source: Microsoft SQL Server</div>
 </header>
-<footer>EDU-SMART academic productivity platform — confidential student data. Exported on {{ now()->format('d M Y H:i') }}.</footer>
+<footer>AcadeAlert academic productivity platform — confidential student data. Exported on {{ now()->format('d M Y H:i') }}.</footer>
 
 <main>
     @yield('content')

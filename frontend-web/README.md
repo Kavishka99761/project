@@ -1,6 +1,6 @@
-# EDU-SMART · Web Frontend
+# AcadeAlert · Web Frontend
 
-Bootstrap 5 client for the EDU-SMART academic platform. **No build step** — plain
+Bootstrap 5 client for the AcadeAlert academic platform. **No build step** — plain
 HTML, CSS and JavaScript served as static files.
 
 ```bash
@@ -8,7 +8,7 @@ node serve.js
 # → http://localhost:5173
 ```
 
-Sign in with **student@edusmart.lk** / **password** (any credentials work — the app
+Sign in with **student@acadealert.lk** / **password** (any credentials work — the app
 runs on bundled mock data, so every module dashboard is fully interactive with no
 backend).
 

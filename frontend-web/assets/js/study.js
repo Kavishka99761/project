@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Study & Engagement Module (Owner: Pasindu)
+   AcadeAlert — Study & Engagement Module (Owner: Pasindu)
    Study timer, engagement tracking, break recommendations, productivity analytics.
    ========================================================================== */
 

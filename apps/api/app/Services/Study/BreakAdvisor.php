@@ -84,7 +84,7 @@ class BreakAdvisor
         $drops = [];
         foreach ($sessions as $session) {
             foreach ($session->engagementLogs as $log) {
-                if ($log->score < config('edusmart.study.engagement.high')) {
+                if ($log->score < config('acadealert.study.engagement.high')) {
                     $drops[] = max(5, (int) $session->started_at->diffInMinutes($log->logged_at));
                     break;
                 }

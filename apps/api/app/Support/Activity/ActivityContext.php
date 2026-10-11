@@ -4,6 +4,7 @@ namespace App\Support\Activity;
 
 use App\Enums\ModuleKey;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * Request-scoped description of "what the student just did".
@@ -37,9 +38,17 @@ class ActivityContext
     /** @var array<int, array<string, mixed>> */
     private array $changes = [];
 
+    private ?string $requestId = null;
+
     public function start(): void
     {
         $this->recording = true;
+    }
+
+    /** Shared by activity_logs.request_id and data_change_log.request_id. */
+    public function requestId(): string
+    {
+        return $this->requestId ??= (string) Str::uuid();
     }
 
     public function isRecording(): bool
@@ -87,6 +96,9 @@ class ActivityContext
     /** Attribute the action to a student (login/registration, before auth). */
     public function asUser(int $userId): static
     {
+        if ($this->userId !== $userId) {
+            DatabaseAuditSession::user($userId);
+        }
         $this->userId = $userId;
 
         return $this;

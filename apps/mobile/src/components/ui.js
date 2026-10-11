@@ -1,5 +1,5 @@
 /**
- * Shared presentational components for the EDU-SMART mobile app.
+ * Shared presentational components for the AcadeAlert mobile app.
  * Kept intentionally small and dependency-free so every module screen reuses the
  * same visual language (matching frontend-web/assets/css/style.css).
  */

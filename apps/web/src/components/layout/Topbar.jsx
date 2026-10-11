@@ -114,7 +114,7 @@ export function Topbar({ onMenu, onSearch }) {
             {meta?.parent && <li className="breadcrumb-item">{meta.parent}</li>}
           </ol>
         </nav>
-        <h1>{meta?.label ?? 'EDU-SMART'}</h1>
+        <h1>{meta?.label ?? 'AcadeAlert'}</h1>
       </div>
 
       <div className="flex-grow-1 d-flex justify-content-center">

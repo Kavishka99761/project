@@ -69,7 +69,7 @@ final class DocumentAnalyzer
 
         $keywords = $this->keywords->extract(
             array_column($sentences, 'text'),
-            (int) config('edusmart.nlp.keywords', 12),
+            (int) config('acadealert.nlp.keywords', 12),
             $headings,
             $title,
             $documentFrequencies,

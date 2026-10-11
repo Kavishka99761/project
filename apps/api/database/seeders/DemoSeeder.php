@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Storage;
  * the retrieval engine, and risk comes from the risk model. Only the past
  * (four weeks of study sessions and history) is synthesised.
  *
- *   Login: student@edusmart.lk / password
+ *   Login: student@acadealert.lk / password
  */
 class DemoSeeder extends Seeder
 {
@@ -72,7 +72,7 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         mt_srand(2026);
-        config(['edusmart.firebase.enabled' => false]); // realtime mirror not needed while seeding
+        config(['acadealert.firebase.enabled' => false]); // realtime mirror not needed while seeding
 
         $this->resetDemoUser();
         $this->createUser();
@@ -91,16 +91,16 @@ class DemoSeeder extends Seeder
         $this->user->settings->update(['auto_summarize' => true]);
         DemoContent::cleanup();
 
-        $this->command?->info('Demo semester seeded for student@edusmart.lk / password');
+        $this->command?->info('Demo semester seeded for student@acadealert.lk / password');
     }
 
     /* ------------------------------------------------------------------ */
 
     private function resetDemoUser(): void
     {
-        if ($existing = User::where('email', 'student@edusmart.lk')->first()) {
+        if ($existing = User::where('email', 'student@acadealert.lk')->first()) {
             foreach (['documents', 'knowledge'] as $area) {
-                Storage::disk(config('edusmart.uploads.disk'))->deleteDirectory("{$area}/{$existing->id}");
+                Storage::disk(config('acadealert.uploads.disk'))->deleteDirectory("{$area}/{$existing->id}");
             }
             $existing->tokens()->delete();
             $existing->delete();
@@ -111,14 +111,14 @@ class DemoSeeder extends Seeder
     {
         $this->user = User::create([
             'name' => 'Sachini Fernando',
-            'email' => 'student@edusmart.lk',
+            'email' => 'student@acadealert.lk',
             'password' => 'password',
             'student_id' => 'SE/2024/0142',
             'university' => 'Faculty of Computing',
             'program' => 'BSc (Hons) in Software Engineering',
             'academic_year' => 'Year 2 · Semester 1',
             'phone' => '+94 71 234 5678',
-            'bio' => 'Second-year software engineering student. Using EDU-SMART to keep notes, deadlines and study time in one place.',
+            'bio' => 'Second-year software engineering student. Using AcadeAlert to keep notes, deadlines and study time in one place.',
             'email_verified_at' => now()->subDays(30),
             'last_login_at' => now()->subHours(2),
             'last_login_ip' => '127.0.0.1',
@@ -625,7 +625,7 @@ class DemoSeeder extends Seeder
     {
         $notifications = app(NotificationService::class);
         $items = [
-            [ModuleKey::Platform, 'Welcome to EDU-SMART, Sachini!', 'Add your modules, upload lecture notes and track your deadlines in one place.', NotificationType::Success, '/modules', 30, true],
+            [ModuleKey::Platform, 'Welcome to AcadeAlert, Sachini!', 'Add your modules, upload lecture notes and track your deadlines in one place.', NotificationType::Success, '/modules', 30, true],
             [ModuleKey::Learning, 'Summary ready: Database Normalization', 'A detailed summary with key concepts and revision notes is ready.', NotificationType::Success, '/learning/summaries', 19, true],
             [ModuleKey::Study, 'You are on a study streak!', 'Five days in a row — keep the chain going today.', NotificationType::Info, '/study/analytics', 1, false],
             [ModuleKey::Study, 'Time for your evening study block', 'Your planned evening session starts now — 50 minutes of focus, then a break.', NotificationType::Reminder, '/study', 0, false],

@@ -29,7 +29,7 @@ class RiskService
     /** @return array<string, float> */
     public function availability(User $user): array
     {
-        return array_map('floatval', $user->settingsOrDefault()->availability ?: config('edusmart.risk.default_availability'));
+        return array_map('floatval', $user->settingsOrDefault()->availability ?: config('acadealert.risk.default_availability'));
     }
 
     /** @return Collection<int, Assignment> */

@@ -1,9 +1,9 @@
 {
-  "name": "@edu-smart/web",
+  "name": "@acadealert/web",
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "EDU-SMART web client — React 19 + Bootstrap 5.3 + liquid-glass design system, backed by the Laravel/SQL Server API and Firebase realtime.",
+  "description": "AcadeAlert web client — React 19 + Bootstrap 5.3 + liquid-glass design system, backed by the Laravel/SQL Server API and Firebase realtime.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

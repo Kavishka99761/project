@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
       setUser(null);
       setStatus('guest');
     };
-    window.addEventListener('edusmart:unauthorized', onUnauthorized);
-    return () => window.removeEventListener('edusmart:unauthorized', onUnauthorized);
+    window.addEventListener('acadealert:unauthorized', onUnauthorized);
+    return () => window.removeEventListener('acadealert:unauthorized', onUnauthorized);
   }, []);
 
   const acceptSession = useCallback((payload) => {

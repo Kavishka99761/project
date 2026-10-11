@@ -191,7 +191,7 @@ class AssignmentService
 
         $remaining = round($active->sum(fn (Assignment $a) => $a->remainingHours()), 1);
         $latest = $active->max('deadline');
-        $horizonEnd = $latest ? Carbon::parse($latest)->min(now()->addDays((int) config('edusmart.risk.horizon_days', 30)))->max(now()->addDays(7)) : now()->addDays(7);
+        $horizonEnd = $latest ? Carbon::parse($latest)->min(now()->addDays((int) config('acadealert.risk.horizon_days', 30)))->max(now()->addDays(7)) : now()->addDays(7);
         $available = $engine->availableHours(now(), $horizonEnd, $availability);
 
         $dueThisWeek = $active->filter(fn ($a) => $a->deadline->lessThanOrEqualTo(now()->addDays(7)));

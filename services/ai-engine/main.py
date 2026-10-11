@@ -10,7 +10,7 @@ MODEL_NAME = os.getenv(
     "sentence-transformers/all-MiniLM-L6-v2",
 )
 
-app = FastAPI(title="EDU-SMART Academic AI Embeddings")
+app = FastAPI(title="AcadeAlert Academic AI Embeddings")
 
 
 class RankRequest(BaseModel):

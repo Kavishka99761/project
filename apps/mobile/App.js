@@ -1,5 +1,5 @@
 /**
- * EDU-SMART mobile app — root component.
+ * AcadeAlert mobile app — root component.
  *
  * Wiring only: safe-area provider (navigation), auth state (Common Platform
  * Layer) and the navigator. All business logic lives in src/api and src/screens.

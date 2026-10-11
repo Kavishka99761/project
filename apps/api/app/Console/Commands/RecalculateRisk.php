@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class RecalculateRisk extends Command
 {
-    protected $signature = 'edusmart:recalculate-risk {--user= : Only this user id}';
+    protected $signature = 'acadealert:recalculate-risk {--user= : Only this user id}';
 
     protected $description = 'Recalculate deadline-miss risk for every student with active assignments';
 

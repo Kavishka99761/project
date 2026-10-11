@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EDU-SMART — Profile & Settings (Common Platform Layer)
+   AcadeAlert — Profile & Settings (Common Platform Layer)
    Student profile, module management, preferences and data export/backup.
    ========================================================================== */
 
@@ -88,7 +88,7 @@
   }
   $("exportJson").addEventListener("click", () => {
     const snapshot = { exportedAt: new Date().toISOString(), user: ES.currentUser, modules, documents: ES.documents, summaries: ES.summaries, assignments: ES.assignments, studySessions: ES.sessionHistory, academicDates: ES.academicDates };
-    download("edu-smart-backup.json", JSON.stringify(snapshot, null, 2), "application/json");
+    download("acadealert-backup.json", JSON.stringify(snapshot, null, 2), "application/json");
     ES.toast("Backup exported", "info");
   });
   $("exportCsv").addEventListener("click", () => {

@@ -1,5 +1,5 @@
 /**
- * EDU-SMART mobile design tokens.
+ * AcadeAlert mobile design tokens.
  * Colors match the web frontend (frontend-web/assets/css/style.css) so the two
  * clients feel like one product. Each module keeps its signature accent.
  */

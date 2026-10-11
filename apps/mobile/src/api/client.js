@@ -1,5 +1,5 @@
 /**
- * EDU-SMART API client.
+ * AcadeAlert API client.
  *
  * Design goal: the app must ALWAYS be usable. Every call tries the live Laravel
  * API first; if the backend is unreachable (not started, different LAN, no PHP on
@@ -10,8 +10,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE, NETWORK_TIMEOUT_MS } from './config';
 
-const TOKEN_KEY = 'edusmart.token';
-const USER_KEY = 'edusmart.user';
+const TOKEN_KEY = 'acadealert.token';
+const USER_KEY = 'acadealert.user';
 
 /* ------------------------------------------------------------------ session */
 

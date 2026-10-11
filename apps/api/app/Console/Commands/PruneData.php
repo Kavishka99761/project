@@ -3,12 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Models\ActivityLog;
+use App\Models\DataChange;
+use App\Services\Platform\DataAudit\DataAuditInstaller;
 use App\Services\Platform\TrashService;
 use Illuminate\Console\Command;
 
 class PruneData extends Command
 {
-    protected $signature = 'edusmart:prune';
+    protected $signature = 'acadealert:prune';
 
     protected $description = 'Purge trash older than 30 days and activity logs past the retention period';
 
@@ -23,10 +25,17 @@ class PruneData extends Command
         }
 
         $logs = ActivityLog::query()
-            ->where('created_at', '<', now()->subDays((int) config('edusmart.activity.retention_days', 365)))
+            ->where('created_at', '<', now()->subDays((int) config('acadealert.activity.retention_days', 365)))
             ->delete();
 
-        $this->components->info("Purged {$purged} trashed record(s) and {$logs} old activity log(s).");
+        $changes = 0;
+        if (app(DataAuditInstaller::class)->logTableExists()) {
+            $changes = DataChange::query()
+                ->where('changed_at', '<', now()->subDays((int) config('acadealert.activity.data_change_retention_days', 365)))
+                ->delete();
+        }
+
+        $this->components->info("Purged {$purged} trashed record(s), {$logs} old activity log(s) and {$changes} old data change(s).");
 
         return self::SUCCESS;
     }

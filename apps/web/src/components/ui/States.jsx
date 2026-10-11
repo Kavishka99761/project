@@ -30,7 +30,7 @@ export function Spinner({ size = 'sm', className = '' }) {
 }
 
 export function ErrorState({ error, onRetry }) {
-  const message = error?.response?.data?.message || (error?.response ? 'The server returned an error.' : 'Cannot reach the EDU-SMART API. Make sure the backend is running.');
+  const message = error?.response?.data?.message || (error?.response ? 'The server returned an error.' : 'Cannot reach the AcadeAlert API. Make sure the backend is running.');
   return (
     <EmptyState icon="wifi-off" title="Could not load this page" action={onRetry && <button type="button" className="btn btn-glass btn-sm" onClick={onRetry}><i className="bi bi-arrow-clockwise me-1" />Try again</button>}>
       {message}

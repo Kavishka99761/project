@@ -16,7 +16,7 @@ export function AppShell() {
   const outlet = useOutlet();
   const [collapsed, setCollapsed] = useState(() => {
     try {
-      return localStorage.getItem('edusmart.sidebar') === 'collapsed';
+      return localStorage.getItem('acadealert.sidebar') === 'collapsed';
     } catch {
       return false;
     }
@@ -35,7 +35,7 @@ export function AppShell() {
   const toggle = () => {
     setCollapsed((value) => {
       try {
-        localStorage.setItem('edusmart.sidebar', value ? 'expanded' : 'collapsed');
+        localStorage.setItem('acadealert.sidebar', value ? 'expanded' : 'collapsed');
       } catch {
         /* ignore */
       }

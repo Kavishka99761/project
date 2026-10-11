@@ -1,5 +1,5 @@
 /**
- * EDU-SMART — bundled demo dataset.
+ * AcadeAlert — bundled demo dataset.
  *
  * The mobile app is offline-first: it renders this data when the Laravel API is
  * unreachable, so the app is always demonstrable (no PHP/MySQL required). Shapes
@@ -18,7 +18,7 @@ const iso = (offsetDays = 0) => isoDate(offsetDays);
 export const demoUser = {
   id: 1,
   name: 'Ayesha Perera',
-  email: 'student@edusmart.lk',
+  email: 'student@acadealert.lk',
   initials: 'AP',
   program: 'BSc (Hons) Software Engineering',
   year: 'Year 2 · Semester 1',

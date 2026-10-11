@@ -112,7 +112,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         foreach (['documents', 'knowledge'] as $area) {
-            Storage::disk(config('edusmart.uploads.disk'))->deleteDirectory("{$area}/{$user->id}");
+            Storage::disk(config('acadealert.uploads.disk'))->deleteDirectory("{$area}/{$user->id}");
         }
         Storage::disk('public')->deleteDirectory("avatars/{$user->id}");
 

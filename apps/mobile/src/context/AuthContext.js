@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
           !email ||
           !password ||
           (email.trim().toLowerCase() === demoUser.email && password === 'password');
-        if (!ok) return { ok: false, message: 'Use student@edusmart.lk / password' };
+        if (!ok) return { ok: false, message: 'Use student@acadealert.lk / password' };
         await setSession('demo-token', demoUser);
         setUser(demoUser);
         return { ok: true };

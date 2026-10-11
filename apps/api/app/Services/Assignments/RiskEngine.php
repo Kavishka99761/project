@@ -92,8 +92,8 @@ class RiskEngine
         if ($to->lessThanOrEqualTo($from)) {
             return 0.0;
         }
-        $startHour = (int) config('edusmart.risk.study_day_start', 8);
-        $endHour = (int) config('edusmart.risk.study_day_end', 23);
+        $startHour = (int) config('acadealert.risk.study_day_start', 8);
+        $endHour = (int) config('acadealert.risk.study_day_end', 23);
         $windowSeconds = ($endHour - $startHour) * 3600;
 
         $hours = 0.0;
@@ -211,8 +211,8 @@ class RiskEngine
         float $daysLeft,
         ?float $velocity,
     ): array {
-        $k = (float) config('edusmart.risk.steepness', 6.5);
-        $m = (float) config('edusmart.risk.midpoint', 0.9);
+        $k = (float) config('acadealert.risk.steepness', 6.5);
+        $m = (float) config('acadealert.risk.midpoint', 0.9);
         $progress = (int) $assignment->progress;
 
         $logit = $k * ($ratio - $m);

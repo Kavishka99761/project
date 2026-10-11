@@ -64,7 +64,7 @@ final class Summarizer
 
     public function targetCount(int $available, SummaryLength $length): int
     {
-        [$ratio, $min, $max] = config('edusmart.nlp.summary_lengths.'.$length->value);
+        [$ratio, $min, $max] = config('acadealert.nlp.summary_lengths.'.$length->value);
         $target = (int) round($available * $ratio);
 
         return max(1, min($available, max($min, min($max, $target))));

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { API_URL } from '@/config/env';
 
-// Axios instance for the EDU-SMART API (Sanctum bearer tokens).
+// Axios instance for the AcadeAlert API (Sanctum bearer tokens).
 
-const TOKEN_KEY = 'edusmart.token';
+const TOKEN_KEY = 'acadealert.token';
 
 export const tokenStore = {
   get: () => {
@@ -41,7 +41,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const url = error.config?.url ?? '';
     if (status === 401 && !url.includes('/auth/login')) {
-      window.dispatchEvent(new CustomEvent('edusmart:unauthorized'));
+      window.dispatchEvent(new CustomEvent('acadealert:unauthorized'));
     }
     return Promise.reject(error);
   },
@@ -51,7 +51,7 @@ api.interceptors.response.use(
 export function errorMessage(error, fallback = 'Something went wrong. Please try again.') {
   if (!error) return fallback;
   if (error.code === 'ECONNABORTED') return 'The server took too long to respond.';
-  if (!error.response) return 'Cannot reach the EDU-SMART API. Is the backend running?';
+  if (!error.response) return 'Cannot reach the AcadeAlert API. Is the backend running?';
   const data = error.response.data;
   if (data?.errors) {
     const first = Object.values(data.errors)[0];

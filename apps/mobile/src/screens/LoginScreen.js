@@ -60,7 +60,7 @@ export default function LoginScreen() {
           <View style={styles.logo}>
             <Ionicons name="school" size={30} color="#fff" />
           </View>
-          <Text style={styles.brandTitle}>EDU-SMART</Text>
+          <Text style={styles.brandTitle}>AcadeAlert</Text>
           <Text style={styles.brandSub}>Your four-module academic companion</Text>
         </View>
 

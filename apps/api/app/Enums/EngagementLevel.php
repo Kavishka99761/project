@@ -17,7 +17,7 @@ enum EngagementLevel: string
 
     public static function fromScore(int $score): self
     {
-        $bands = config('edusmart.study.engagement');
+        $bands = config('acadealert.study.engagement');
 
         return match (true) {
             $score >= $bands['high'] => self::High,

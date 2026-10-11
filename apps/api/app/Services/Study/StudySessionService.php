@@ -61,7 +61,7 @@ class StudySessionService
                 'document_id' => $data['document_id'] ?? null,
                 'activity' => $data['activity'] ?? StudyActivity::Revision,
                 'goal' => $data['goal'] ?? null,
-                'planned_minutes' => $data['planned_minutes'] ?? (int) config('edusmart.study.default_planned_minutes', 25),
+                'planned_minutes' => $data['planned_minutes'] ?? (int) config('acadealert.study.default_planned_minutes', 25),
                 'status' => SessionStatus::Active,
                 'started_at' => now(),
                 'last_resumed_at' => now(),

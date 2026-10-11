@@ -1,11 +1,11 @@
-# EDU-SMART · API Reference
+# AcadeAlert · API Reference
 
 Base URL: `http://localhost:8000/api`
 Format: JSON. Auth: Laravel Sanctum bearer tokens.
 
 ```bash
 curl http://localhost:8000/api/health
-# {"status":"ok","service":"edu-smart-api","time":"2026-09-13T09:14:02+05:30"}
+# {"status":"ok","service":"acadealert-api","time":"2026-09-13T09:14:02+05:30"}
 ```
 
 ---
@@ -26,7 +26,7 @@ Three routes are public. Everything else requires
 ### POST `/login`
 
 ```json
-{ "email": "student@edusmart.lk", "password": "password" }
+{ "email": "student@acadealert.lk", "password": "password" }
 ```
 
 `200` → `{ "user": {...}, "token": "1|abc..." }`
@@ -38,7 +38,7 @@ Public. Always returns a generic `200` message whether or not the email is
 registered (prevents account enumeration).
 
 ```json
-{ "email": "student@edusmart.lk" }
+{ "email": "student@acadealert.lk" }
 ```
 
 `200` → `{ "message": "If an account exists for that email, a reset link has been sent." }`
@@ -52,7 +52,7 @@ without a mail server. In production this token is only ever logged/emailed.
 Public. Consumes the token from `/forgot-password` (valid 60 minutes, single use).
 
 ```json
-{ "email": "student@edusmart.lk", "token": "<64-char token>", "password": "newpass", "password_confirmation": "newpass" }
+{ "email": "student@acadealert.lk", "token": "<64-char token>", "password": "newpass", "password_confirmation": "newpass" }
 ```
 
 `200` → `{ "message": "Your password has been reset. Please sign in." }`
@@ -494,7 +494,7 @@ curl http://localhost:8000/api/health
 # 2. login, capture the token
 TOKEN=$(curl -s -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" -H "Accept: application/json" \
-  -d '{"email":"student@edusmart.lk","password":"password"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+  -d '{"email":"student@acadealert.lk","password":"password"}' | grep -o '"token":"[^"]*' | cut -d'"' -f4)
 
 # 3. authenticated calls
 curl -H "Authorization: Bearer $TOKEN" -H "Accept: application/json" http://localhost:8000/api/dashboard
@@ -511,7 +511,7 @@ On Windows PowerShell use `Invoke-RestMethod` instead:
 
 ```powershell
 $login = Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/login `
-  -ContentType 'application/json' -Body '{"email":"student@edusmart.lk","password":"password"}'
+  -ContentType 'application/json' -Body '{"email":"student@acadealert.lk","password":"password"}'
 $h = @{ Authorization = "Bearer $($login.token)"; Accept = 'application/json' }
 Invoke-RestMethod -Uri http://localhost:8000/api/dashboard -Headers $h
 ```

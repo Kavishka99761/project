@@ -1,4 +1,4 @@
-# EDU-SMART · Web Frontend Setup
+# AcadeAlert · Web Frontend Setup
 
 Bootstrap 5 web client. **No build step, no `node_modules`, no transpiler** — plain
 HTML, CSS and JavaScript served as static files.
@@ -27,7 +27,7 @@ node serve.js
 ```
 
 ```
-  EDU-SMART web frontend running at  →  http://localhost:5173
+  AcadeAlert web frontend running at  →  http://localhost:5173
 ```
 
 Open **http://localhost:5173**.
@@ -66,7 +66,7 @@ account for consistency with the backend:
 
 | Email | Password |
 | ----- | -------- |
-| `student@edusmart.lk` | `password` |
+| `student@acadealert.lk` | `password` |
 
 The session is kept in `localStorage`, so refreshing keeps you signed in.
 
@@ -153,7 +153,7 @@ The web client currently runs on mock data only. To wire it to the backend, add 
 const API_BASE = 'http://localhost:8000/api';
 
 ES.api = {
-  token: () => localStorage.getItem('edusmart.token'),
+  token: () => localStorage.getItem('acadealert.token'),
 
   async request(path, { method = 'GET', body } = {}) {
     const headers = { Accept: 'application/json' };

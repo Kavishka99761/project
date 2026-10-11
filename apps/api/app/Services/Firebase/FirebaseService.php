@@ -40,12 +40,12 @@ class FirebaseService
 
     public function enabled(): bool
     {
-        return (bool) config('edusmart.firebase.enabled') && (string) config('edusmart.firebase.project_id') !== '';
+        return (bool) config('acadealert.firebase.enabled') && (string) config('acadealert.firebase.project_id') !== '';
     }
 
     public function projectId(): string
     {
-        return (string) config('edusmart.firebase.project_id');
+        return (string) config('acadealert.firebase.project_id');
     }
 
     public function uid(int $userId): string
@@ -55,7 +55,7 @@ class FirebaseService
 
     public function usesEmulator(): bool
     {
-        return (string) config('edusmart.firebase.firestore_emulator_host') !== '';
+        return (string) config('acadealert.firebase.firestore_emulator_host') !== '';
     }
 
     /** Connection details the web client needs to join the realtime layer. */
@@ -71,8 +71,8 @@ class FirebaseService
             'uid' => $this->uid($user->id),
             'token' => $this->createCustomToken($user),
             'emulators' => $this->usesEmulator() ? [
-                'firestore' => config('edusmart.firebase.firestore_emulator_host'),
-                'auth' => config('edusmart.firebase.auth_emulator_host'),
+                'firestore' => config('acadealert.firebase.firestore_emulator_host'),
+                'auth' => config('acadealert.firebase.auth_emulator_host'),
             ] : null,
         ];
     }
@@ -93,7 +93,7 @@ class FirebaseService
             'claims' => ['laravel_id' => $user->id, 'name' => $user->name],
         ];
 
-        if ((string) config('edusmart.firebase.auth_emulator_host') !== '') {
+        if ((string) config('acadealert.firebase.auth_emulator_host') !== '') {
             $payload['iss'] = $payload['sub'] = 'firebase-auth-emulator@example.com';
 
             return $this->base64Url(json_encode(['alg' => 'none', 'typ' => 'JWT'])).'.'
@@ -239,7 +239,7 @@ class FirebaseService
     {
         try {
             $request = Http::withToken($this->accessToken())
-                ->timeout((int) config('edusmart.firebase.timeout', 3))
+                ->timeout((int) config('acadealert.firebase.timeout', 3))
                 ->connectTimeout(1)
                 ->acceptJson();
             $response = $method === 'delete' ? $request->delete($url) : $request->{$method}($url, $body);
@@ -260,7 +260,7 @@ class FirebaseService
 
     private function trip(string $reason): void
     {
-        Cache::put(self::BREAKER_KEY, true, (int) config('edusmart.firebase.circuit_breaker_seconds', 60));
+        Cache::put(self::BREAKER_KEY, true, (int) config('acadealert.firebase.circuit_breaker_seconds', 60));
         Log::warning('Firebase mirror paused: '.$reason);
     }
 
@@ -268,7 +268,7 @@ class FirebaseService
     {
         $segments = implode('/', array_map('rawurlencode', explode('/', $path)));
         $base = $this->usesEmulator()
-            ? 'http://'.config('edusmart.firebase.firestore_emulator_host')
+            ? 'http://'.config('acadealert.firebase.firestore_emulator_host')
             : 'https://firestore.googleapis.com';
 
         return "{$base}/v1/projects/{$this->projectId()}/databases/(default)/documents/{$segments}";
@@ -304,7 +304,7 @@ class FirebaseService
     /** @return array{client_email: string, private_key: string}|null */
     private function serviceAccount(): ?array
     {
-        $path = (string) config('edusmart.firebase.credentials');
+        $path = (string) config('acadealert.firebase.credentials');
         if ($path === '') {
             return null;
         }

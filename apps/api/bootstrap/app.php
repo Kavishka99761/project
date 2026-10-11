@@ -3,6 +3,7 @@
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\RecordActivity;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetDatabaseAuditContext;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /*
 |--------------------------------------------------------------------------
-| EDU-SMART API bootstrap (Laravel 12)
+| AcadeAlert API bootstrap (Laravel 12)
 |--------------------------------------------------------------------------
 | Routes live under /api/v1 (routes/api.php). Authentication is stateless:
 | the React client sends a Sanctum bearer token with every request.
@@ -29,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api/v1',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [ForceJsonResponse::class], append: [RecordActivity::class]);
+        $middleware->api(prepend: [ForceJsonResponse::class, SetDatabaseAuditContext::class], append: [RecordActivity::class]);
         $middleware->append(SecurityHeaders::class);
         $middleware->throttleApi('api');
     })

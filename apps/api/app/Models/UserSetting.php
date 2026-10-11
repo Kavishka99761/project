@@ -45,14 +45,14 @@ class UserSetting extends Model
         return [
             'theme' => 'system',
             'accent_color' => '#6366f1',
-            'availability' => config('edusmart.risk.default_availability'),
+            'availability' => config('acadealert.risk.default_availability'),
         ];
     }
 
     /** Study hours available on a weekday key ("mon" … "sun"). */
     public function hoursOn(string $weekday): float
     {
-        $availability = $this->availability ?: config('edusmart.risk.default_availability');
+        $availability = $this->availability ?: config('acadealert.risk.default_availability');
 
         return (float) ($availability[$weekday] ?? 0);
     }

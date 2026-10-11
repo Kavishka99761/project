@@ -40,7 +40,7 @@ export function StartSessionForm({ initial = {}, focusPeriod, recommendation }) 
     event.preventDefault();
     try {
       await start.mutateAsync({ ...form, goal: form.goal || null });
-      toast.success('Session started', 'Stay focused — EDU-SMART will suggest breaks when you need them.');
+      toast.success('Session started', 'Stay focused — AcadeAlert will suggest breaks when you need them.');
       if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
     } catch (error) {
       toast.error('Could not start', errorMessage(error));

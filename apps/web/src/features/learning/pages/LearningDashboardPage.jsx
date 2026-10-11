@@ -32,7 +32,7 @@ export default function LearningDashboardPage() {
 
   return (
     <>
-      <PageHeader module="learning" title="Learning hub" subtitle="Upload lecture notes, PDFs and Word files — EDU-SMART extracts the text, summarises it and builds study aids for you." actions={actions} />
+      <PageHeader module="learning" title="Learning hub" subtitle="Upload lecture notes, PDFs and Word files — AcadeAlert extracts the text, summarises it and builds study aids for you." actions={actions} />
       {!data ? <SkeletonGrid count={8} /> : (
         <>
           <div className="row g-3 mb-3">
