@@ -48,6 +48,10 @@ return [
         'chunk_max_words' => 200,
         'top_k' => 5,
         'min_relevance' => 0.18,
+        // At or above this retrieval score the answer must come from the
+        // documents with citations. Between min_relevance and here the match
+        // is too weak to trust, so the assistant may answer generally instead.
+        'grounded_relevance' => 0.45,
         'bm25_k1' => 1.4,
         'bm25_b' => 0.72,
     ],
@@ -105,14 +109,19 @@ return [
     ],
 
     /*
-    | Optional OpenAI-compatible LLM used to phrase answers/summaries.
+    | Academic Assistant language model. Any OpenAI-compatible server works;
+    | the default is Qwen3 8B served locally by Ollama, which needs no API key
+    | (`ollama pull qwen3:8b`). general_answers lets the assistant answer
+    | questions the student's documents do not cover, like a normal chatbot;
+    | with it off, the assistant only ever answers from cited passages.
     */
     'llm' => [
         'enabled' => (bool) env('LLM_ENABLED', false),
-        'base_url' => env('LLM_BASE_URL', 'https://api.openai.com/v1'),
-        'api_key' => env('LLM_API_KEY'),
-        'model' => env('LLM_MODEL', 'gpt-4o-mini'),
-        'timeout' => (int) env('LLM_TIMEOUT', 30),
+        'base_url' => env('LLM_BASE_URL', 'http://127.0.0.1:11434/v1'),
+        'api_key' => env('LLM_API_KEY', ''),
+        'model' => env('LLM_MODEL', 'qwen3:8b'),
+        'timeout' => (int) env('LLM_TIMEOUT', 120),
+        'general_answers' => (bool) env('LLM_GENERAL_ANSWERS', true),
     ],
 
     /*

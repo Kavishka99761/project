@@ -3,12 +3,17 @@
    RAG-style chatbot over an academic knowledge base, document search,
    academic date extraction and calendar integration.
 
-   NOTE — this is a SIMPLIFIED, standalone retrieval, not a port of the API.
-   It matches whole documents by substring keyword overlap (raw threshold >= 2)
-   and returns a hand-written answer per KB entry. The authoritative engine is
-   backend-laravel/app/Services/RetrievalService.php (chunk-level, normalised
-   0.08 threshold), faithfully ported in mobile-app/src/api/retrieve.js.
-   This page keeps its own corpus so it stays build-free and backend-free.
+   Answers come from Qwen3 8B running locally through Ollama (assets/js/llm.js),
+   exactly as apps/api does it: the question is matched against this page's
+   knowledge base first, a strong match is handed to the model to answer *with a
+   citation*, and anything else is answered from the model's own knowledge like a
+   normal AI assistant. With no model running, the hand-written KB answers below
+   are used instead, and the chat says so.
+
+   NOTE — retrieval here is SIMPLIFIED, not a port of the API: it matches whole
+   documents by substring keyword overlap (raw threshold >= 2) rather than
+   chunk-level BM25. The authoritative engine is
+   apps/api/app/Services/Assistant/Bm25Retriever.php.
    ========================================================================== */
 
 (function () {
@@ -59,38 +64,164 @@
     return bestScore >= 2 ? best : null;
   }
 
-  function botReply(query) {
+  /** The overlap score of one KB entry, used to tell a strong match from a weak one. */
+  function rawScore(query, doc) {
+    if (!doc) return 0;
+    const q = query.toLowerCase();
+    const tokens = q.replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter((t) => t.length > 2);
+    let score = 0;
+    doc.keywords.forEach((k) => { if (q.includes(k)) score += 3; });
+    tokens.forEach((t) => {
+      if (doc.keywords.some((k) => k.includes(t)) || doc.title.toLowerCase().includes(t)) score += 1;
+    });
+    return score;
+  }
+
+  /* ---------- Answering ----------------------------------------------------
+     Two paths, the same as the API: a strong KB match is answered from the
+     document with a citation; everything else is answered from the model's own
+     knowledge and labelled as such. */
+
+  const STRONG_MATCH = 5;   // keyword-overlap score that counts as "in the documents"
+
+  /** Fallback wording when no model is reachable. */
+  function cannedReply(query) {
     const hit = retrieve(query);
-    if (hit) return { text: hit.answer, src: `${hit.title} · ${hit.section} · p.${hit.page}` };
-    return { text: "I couldn't find that in the indexed academic documents. Try asking about attendance, project deadlines, submission rules, assessment weighting or the interim review.", src: "" };
+    if (hit) return { text: hit.answer, src: `${hit.title} · ${hit.section} · p.${hit.page}`, mode: "kb" };
+    return {
+      text: "No language model is running, so I can only answer from the five indexed demo documents — " +
+        "try attendance, project deadlines, submission rules, assessment weighting or the interim review. " +
+        "To answer anything, start Qwen3 locally: <code>ollama pull qwen3:8b</code> then <code>ollama serve</code>.",
+      src: "",
+      mode: "offline"
+    };
+  }
+
+  /** The last few turns, so follow-ups ("explain that more simply") work. */
+  function historyMessages() {
+    return conversation.slice(-6).map((m) => ({
+      role: m.role === "bot" ? "assistant" : "user",
+      content: String(m.text).replace(/<[^>]+>/g, " ").slice(0, 1200)
+    }));
+  }
+
+  function scoreOf(query) {
+    const hit = retrieve(query);
+    return { hit: hit, strong: Boolean(hit) && rawScore(query, hit) >= STRONG_MATCH };
   }
 
   /* ---------- Chat rendering ---------- */
+  /** Model output is untrusted text: escape it before it reaches the DOM. */
+  function escapeHtml(text) {
+    return String(text == null ? "" : text)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  /** Escape first, then allow the little markdown the model tends to use. */
+  function formatAnswer(text) {
+    return escapeHtml(text)
+      .replace(/```([\s\S]*?)```/g, (m, code) => '<pre class="es-code">' + code.replace(/^\n/, "") + "</pre>")
+      .replace(/`([^`\n]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/^\s*[-*]\s+(.+)$/gm, "• $1")
+      .replace(/\n{2,}/g, "<br><br>")
+      .replace(/\n/g, "<br>");
+  }
+
   function renderChat() {
     const box = $("chatBox");
     box.innerHTML = conversation.map((m) => `
       <div class="es-bubble ${m.role}">
         ${m.text}
         ${m.src ? `<span class="es-src"><i class="bi bi-file-earmark-text me-1"></i>Source: ${m.src}</span>` : ""}
+        ${m.mode === "general" ? '<span class="es-src"><i class="bi bi-cpu me-1"></i>Answered from the model\'s general knowledge — not from your documents</span>' : ""}
       </div>`).join("");
     box.scrollTop = box.scrollHeight;
   }
 
   function ask(text) {
     if (!text.trim()) return;
-    conversation.push({ role: "user", text, src: "" });
+    const question = text.trim();
+    conversation.push({ role: "user", text: escapeHtml(question), src: "" });
+    const history = historyMessages().slice(0, -1);
     renderChat();
     $("chatInput").value = "";
-    // Simulate retrieval latency
-    setTimeout(() => {
-      const r = botReply(text);
-      conversation.push({ role: "bot", text: r.text, src: r.src });
-      if (!ES.recentQuestions.includes(text)) ES.recentQuestions.unshift(text);
-      renderChat();
-    }, 500);
+
+    if (!ES.recentQuestions.includes(question)) ES.recentQuestions.unshift(question);
+
+    const pending = { role: "bot", text: '<span class="es-typing">Thinking…</span>', src: "", pending: true };
+    conversation.push(pending);
+    renderChat();
+
+    const found = scoreOf(question);
+    // A strong match gives the model the document to quote; a weak one is left
+    // out entirely so an irrelevant passage cannot drag the answer off course.
+    const context = found.strong
+      ? `[1] ${found.hit.title} — ${found.hit.section} (p. ${found.hit.page})\n${found.hit.answer}`
+      : null;
+
+    ES.llm.check().then((up) => {
+      if (!up) {
+        const canned = cannedReply(question);
+        Object.assign(pending, { text: canned.text, src: canned.src, pending: false, mode: canned.mode });
+        renderChat();
+        renderLlmStatus();
+        return;
+      }
+
+      const messages = [{ role: "system", content: ES.llm.systemPrompt(context) }]
+        .concat(history)
+        .concat([{ role: "user", content: question }]);
+
+      let streamed = "";
+      return ES.llm.chat(messages, (sofar) => {
+        streamed = sofar;
+        pending.text = formatAnswer(sofar) + '<span class="es-caret">▌</span>';
+        renderChat();
+      }).then((answer) => {
+        const final = answer || streamed;
+        const cited = /\[1\]/.test(final);
+        Object.assign(pending, {
+          text: formatAnswer(final),
+          src: cited && found.hit ? `${found.hit.title} · ${found.hit.section} · p.${found.hit.page}` : "",
+          mode: cited ? "kb" : "general",
+          pending: false
+        });
+        renderChat();
+      }).catch((error) => {
+        const canned = cannedReply(question);
+        Object.assign(pending, {
+          text: canned.text + '<br><span class="text-muted-es" style="font-size:.76rem">Model error: ' + escapeHtml(error.message) + "</span>",
+          src: canned.src,
+          mode: "offline",
+          pending: false
+        });
+        renderChat();
+        ES.llm.check(true).then(renderLlmStatus);
+      });
+    });
+  }
+
+  /** Model status under the chat header, so it is obvious what answered. */
+  function renderLlmStatus() {
+    const el = $("llmStatus");
+    if (!el) return;
+    const cfg = ES.llm.settings();
+
+    return ES.llm.check().then((up) => {
+      el.innerHTML = up
+        ? '<span class="es-pill bg-soft-kavishka" style="font-size:.74rem"><i class="bi bi-cpu me-1"></i>' +
+            escapeHtml(cfg.model) + " · local</span>"
+        : '<span class="es-pill" style="font-size:.74rem;background:var(--es-bg-soft);color:var(--es-text-muted)">' +
+            '<i class="bi bi-plug me-1"></i>No model running — demo answers only</span>' +
+          '<span class="text-muted-es ms-2" style="font-size:.72rem">' + escapeHtml(ES.llm.lastError()) + "</span>";
+      return up;
+    });
   }
 
   $("chatForm").addEventListener("submit", (e) => { e.preventDefault(); ask($("chatInput").value); });
+  renderLlmStatus();
   $("clearChat").addEventListener("click", () => { conversation = ES.chatSeed.slice(); renderChat(); ES.toast("Conversation cleared", "info"); });
 
   /* ---------- Suggestions & recent questions ---------- */

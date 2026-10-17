@@ -57,7 +57,7 @@ class SystemController extends Controller
             'database' => ['driver' => DB::getDriverName(), 'name' => $server->db ?? null, 'server' => trim(($server->edition ?? '').' '.($server->version ?? ''))],
             'firebase' => ['enabled' => $firebase->enabled(), 'emulator' => $firebase->usesEmulator(), 'project_id' => $firebase->projectId(), 'reachable' => $firebase->ping()],
             'ai_engine' => ['configured' => (string) config('acadealert.ai_engine.url') !== '', 'available' => $reranker->available()],
-            'llm' => ['enabled' => $llm->enabled(), 'model' => $llm->enabled() ? $llm->model() : null],
+            'llm' => $llm->health() + ['general_answers' => $llm->generalAnswersEnabled()],
         ]);
     }
 

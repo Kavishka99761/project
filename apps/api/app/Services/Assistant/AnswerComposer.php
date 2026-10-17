@@ -8,12 +8,22 @@ use App\Services\Nlp\Text;
 /**
  * KAVISHKA — composes a grounded answer from retrieved passages.
  *
- * Extractive by design: the answer is built from the most relevant
- * sentences of the cited passages, chosen with awareness of what the
- * question asks for (a date for "when", a number for "how many", a rule for
- * "can I…"). Every sentence carries a [n] citation that maps to a source
- * with document, section and page. An optional LLM may only *rephrase* the
- * cited passages; if its output lacks citations the extractive answer wins.
+ * Two answer paths:
+ *
+ *  1. **Grounded** — the knowledge base has relevant passages. The answer is
+ *     built from their most relevant sentences, chosen with awareness of what
+ *     the question asks for (a date for "when", a number for "how many", a
+ *     rule for "can I…"), and every sentence carries a [n] citation mapping
+ *     to a document, section and page. When an LLM is configured it may only
+ *     *rephrase* those cited passages; if its output drops the citations the
+ *     extractive answer wins, so a source is never invented.
+ *
+ *  2. **General** — nothing in the student's documents covers the question.
+ *     With LLM_GENERAL_ANSWERS=true the configured model (Qwen3 8B by
+ *     default) answers from its own knowledge, like any AI assistant, and the
+ *     answer is labelled as general knowledge rather than as something found
+ *     in the uploaded documents. With no model reachable, the older "not in
+ *     your documents" reply is returned instead.
  */
 class AnswerComposer
 {
@@ -26,9 +36,10 @@ class AnswerComposer
 
     /**
      * @param  list<array{chunk: \App\Models\KnowledgeChunk, score: float, relevance: float, coverage: float}>  $hits
+     * @param  list<array{role: string, content: string}>  $history  earlier turns, for follow-up questions
      * @return array{answer: string, sources: list<array<string, mixed>>, confidence: float, suggestions: list<string>, found: bool, method: string, question_type: string}
      */
-    public function compose(string $question, array $hits, array $queryWeights, array $originalTerms = []): array
+    public function compose(string $question, array $hits, array $queryWeights, array $originalTerms = [], array $history = []): array
     {
         $this->originalTerms = $originalTerms;
         $type = $this->questionType($question);
@@ -36,10 +47,27 @@ class AnswerComposer
         $hits = array_values(array_filter($hits, fn ($h) => $h['relevance'] >= $threshold * 0.6));
 
         if ($hits === [] || $hits[0]['relevance'] < $threshold) {
+            $nearby = array_slice($hits, 0, 2);
+            $sources = array_map(fn ($h, $i) => $this->source($h, $i + 1, null), $nearby, array_keys($nearby));
+
+            // Nothing in the student's own documents. Answer like a normal AI
+            // assistant rather than refusing, and label where it came from.
+            if ($general = $this->general($question, $history)) {
+                return [
+                    'answer' => $general,
+                    'sources' => $sources,
+                    'confidence' => round($hits[0]['relevance'] ?? 0.0, 3),
+                    'suggestions' => $this->genericSuggestions(),
+                    'found' => false,
+                    'method' => 'llm-general',
+                    'question_type' => $type,
+                ];
+            }
+
             return [
                 'answer' => "I couldn't find this in your academic documents. Try rephrasing the question, "
                     .'or add the relevant handbook, project guideline or regulation to the knowledge base so I can answer it with a source.',
-                'sources' => array_map(fn ($h, $i) => $this->source($h, $i + 1, null), array_slice($hits, 0, 2), array_keys(array_slice($hits, 0, 2))),
+                'sources' => $sources,
                 'confidence' => round($hits[0]['relevance'] ?? 0.0, 3),
                 'suggestions' => $this->genericSuggestions(),
                 'found' => false,
@@ -73,10 +101,25 @@ class AnswerComposer
             }
         }
 
+        // How much do the retrieved passages really look like the answer?
+        // A strong match must be answered from the documents, with citations.
+        // A weak one (an off-topic question that still brushed a document)
+        // lets the model answer from its own knowledge instead of forcing an
+        // irrelevant quote, which is what makes the assistant usable for
+        // anything the student asks.
         $method = 'extractive';
-        if ($this->llm->enabled() && ($rewritten = $this->rewrite($question, $sources))) {
-            $answer = $rewritten;
-            $method = 'llm';
+        $strong = $hits[0]['relevance'] >= (float) config('acadealert.assistant.grounded_relevance', 0.45);
+
+        if ($this->llm->enabled()) {
+            if ($strong) {
+                if ($rewritten = $this->rewrite($question, $sources, $history)) {
+                    $answer = $rewritten;
+                    $method = 'llm';
+                }
+            } elseif ($mixed = $this->groundedOrGeneral($question, $sources, $history)) {
+                $answer = $mixed['answer'];
+                $method = $mixed['method'];
+            }
         }
 
         $bestSentence = $selected[0]['score'] ?? 0.0;
@@ -277,19 +320,139 @@ class AnswerComposer
         return mb_strtoupper(mb_substr($answer, 0, 1)).mb_substr($answer, 1);
     }
 
-    /** @param  list<array<string, mixed>>  $sources */
-    private function rewrite(string $question, array $sources): ?string
+    /**
+     * @param  list<array<string, mixed>>  $sources
+     * @param  list<array{role: string, content: string}>  $history
+     */
+    private function rewrite(string $question, array $sources, array $history = []): ?string
     {
-        $context = implode("\n\n", array_map(
-            fn ($s) => "[{$s['n']}] {$s['document']} — ".($s['section'] ?? 'General').($s['page'] ? " (p. {$s['page']})" : '')."\n{$s['excerpt']}",
-            $sources,
-        ));
+        $context = $this->context($sources);
 
         $answer = $this->llm->complete([
             ['role' => 'system', 'content' => 'You are an academic assistant for university students. Answer ONLY from the numbered sources. Cite every claim with its source number in square brackets, e.g. [1]. If the sources do not contain the answer, say so. Be concise (max 120 words).'],
+            ...$this->historyMessages($history),
             ['role' => 'user', 'content' => "Sources:\n{$context}\n\nQuestion: {$question}"],
         ], 350);
 
         return $answer && preg_match('/\[\d+\]/', $answer) ? $answer : null;
+    }
+
+    /**
+     * Weak retrieval: hand the model the passages but let it decide. If they
+     * answer the question it cites them; if they do not, it answers from its
+     * own knowledge and the answer is labelled as such.
+     *
+     * @param  list<array<string, mixed>>  $sources
+     * @param  list<array{role: string, content: string}>  $history
+     * @return array{answer: string, method: string}|null
+     */
+    private function groundedOrGeneral(string $question, array $sources, array $history = []): ?array
+    {
+        if (! $this->llm->generalAnswersEnabled()) {
+            // General answers switched off: stay strict about citations.
+            return ($cited = $this->rewrite($question, $sources, $history))
+                ? ['answer' => $cited, 'method' => 'llm']
+                : null;
+        }
+
+        $context = $this->context($sources);
+        $answer = $this->llm->complete([
+            ['role' => 'system', 'content' => implode(' ', [
+                "You are AcadeAlert's Academic Assistant, helping a university student.",
+                'Numbered extracts from the student\'s own academic documents are provided, but they may be irrelevant.',
+                'If an extract answers the question, use it and cite it as [1], [2] and so on.',
+                'If the extracts are not relevant, ignore them completely and answer from your own knowledge, with no citations at all.',
+                'Never invent a citation, page number, deadline, mark or university regulation.',
+                'Answer in clear British English, under 220 words unless more detail is needed.',
+            ])],
+            ...$this->historyMessages($history),
+            ['role' => 'user', 'content' => "Possibly related extracts:\n{$context}\n\nQuestion: {$question}"],
+        ], 700, 0.35);
+
+        if (! $answer) {
+            return null;
+        }
+
+        return preg_match('/\[\d+\]/', $answer)
+            ? ['answer' => $answer, 'method' => 'llm']
+            : ['answer' => $answer."\n\n_Answered from general knowledge — not from your uploaded documents._", 'method' => 'llm-general'];
+    }
+
+    /**
+     * Answer a question the knowledge base does not cover, from the model's
+     * own knowledge — the "normal AI assistant" path. Returns null when no
+     * model is configured or the call fails, so the caller falls back to the
+     * local engine's wording.
+     *
+     * @param  list<array{role: string, content: string}>  $history
+     */
+    private function general(string $question, array $history = []): ?string
+    {
+        if (! $this->llm->generalAnswersEnabled()) {
+            return null;
+        }
+
+        $system = implode(' ', [
+            "You are AcadeAlert's Academic Assistant, helping a university student.",
+            'Answer the question directly and helpfully in clear British English.',
+            'You may answer anything: study topics, programming, maths, academic writing, exam technique or everyday questions.',
+            'Explain step by step when that helps, and give short worked examples or code where it is useful.',
+            "This answer comes from your own knowledge, not from the student's uploaded documents, so never invent citations,",
+            'page numbers, deadlines, marks or university regulations. If the question is about their own course rules or dates,',
+            'answer in general terms and tell them to check their handbook or add it to the knowledge base.',
+            'Keep it under 220 words unless more detail is genuinely needed.',
+        ]);
+
+        $answer = $this->llm->complete([
+            ['role' => 'system', 'content' => $system],
+            ...$this->historyMessages($history),
+            ['role' => 'user', 'content' => $question],
+        ], 700, 0.4);
+
+        if (! $answer) {
+            return null;
+        }
+
+        return $answer."\n\n_Answered from general knowledge — not from your uploaded documents._";
+    }
+
+    /**
+     * The numbered extracts given to the model.
+     *
+     * @param  list<array<string, mixed>>  $sources
+     */
+    private function context(array $sources): string
+    {
+        return implode("\n\n", array_map(
+            fn ($s) => "[{$s['n']}] {$s['document']} — ".($s['section'] ?? 'General').($s['page'] ? " (p. {$s['page']})" : '')."\n{$s['excerpt']}",
+            $sources,
+        ));
+    }
+
+    /**
+     * The last few turns, so follow-ups like "explain that more simply" work.
+     *
+     * @param  list<array{role: string, content: string}>  $history
+     * @return list<array{role: string, content: string}>
+     */
+    private function historyMessages(array $history): array
+    {
+        $out = [];
+
+        foreach (array_slice($history, -6) as $turn) {
+            $content = preg_replace('/_Answered from general knowledge[^_]*_/u', '', (string) ($turn['content'] ?? '')) ?? '';
+            $content = trim($content);
+
+            if ($content === '') {
+                continue;
+            }
+
+            $out[] = [
+                'role' => ($turn['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'content' => Text::excerpt($content, 1200),
+            ];
+        }
+
+        return $out;
     }
 }

@@ -10,8 +10,11 @@ use Illuminate\Support\Str;
 
 /**
  * KAVISHKA — academic chatbot. Retrieves passages from the student's
- * knowledge base (BM25 + optional semantic re-ranking), composes a cited
- * answer and stores the full exchange as conversation history.
+ * knowledge base (BM25 + optional semantic re-ranking) and composes a cited
+ * answer from them. Questions the documents do not cover are answered by the
+ * configured LLM (Qwen3 8B by default) as a general assistant, so the student
+ * can ask anything. The full exchange is stored as conversation history, and
+ * the last few turns are passed back in so follow-up questions work.
  */
 class ChatService
 {
@@ -40,6 +43,7 @@ class ChatService
             $hits,
             $this->retriever->distinctiveWeights($question),
             $this->retriever->originalTerms($question),
+            $this->history($conversation),
         );
 
         return DB::transaction(function () use ($user, $question, $conversation, $scope, $result, $reranked, $started) {
@@ -77,5 +81,26 @@ class ChatService
 
             return ['conversation' => $conversation->refresh(), 'question' => $userMessage, 'answer' => $answer];
         });
+    }
+
+    /**
+     * The recent turns of this conversation, oldest first, for the LLM.
+     *
+     * @return list<array{role: string, content: string}>
+     */
+    private function history(?ChatConversation $conversation): array
+    {
+        if (! $conversation) {
+            return [];
+        }
+
+        return $conversation->messages()
+            ->latest('id')
+            ->limit(6)
+            ->get(['role', 'content'])
+            ->reverse()
+            ->map(fn (ChatMessage $message) => ['role' => $message->role, 'content' => (string) $message->content])
+            ->values()
+            ->all();
     }
 }

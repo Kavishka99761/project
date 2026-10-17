@@ -472,6 +472,13 @@ a { text-decoration: none; }
 .es-bubble.bot  { align-self: flex-start; background: var(--es-surface); border: 1px solid var(--es-border); border-bottom-left-radius: 4px; }
 .es-bubble .es-src { display: block; margin-top: 6px; font-size: 0.72rem; opacity: 0.75; }
 
+/* Assistant: streaming answer from the local model (Qwen3 via Ollama). */
+.es-typing { opacity: .7; }
+.es-caret { animation: es-blink 1s steps(2, start) infinite; font-weight: 700; }
+@keyframes es-blink { to { visibility: hidden; } }
+.es-bubble code { background: var(--es-bg-soft); padding: 1px 5px; border-radius: 5px; font-size: .82rem; }
+.es-bubble .es-code { background: var(--es-bg-soft); border: 1px solid var(--es-border); border-radius: 10px; padding: 10px 12px; margin: 8px 0 2px; overflow-x: auto; font-size: .8rem; white-space: pre-wrap; }
+
 /* ---------- Timer (Pasindu) ---------- */
 .es-timer-ring {
   width: 200px; height: 200px; margin: 0 auto; position: relative;

@@ -10,7 +10,8 @@ independently-owned modules on top of one shared platform layer.
 | Mobile client | React Native · Expo SDK 51 | `apps/mobile/` |
 | Static demo | HTML · CSS · JavaScript · Bootstrap (mock data, no backend) | `frontend-web/` |
 | AI engine (optional) | Python semantic retrieval service | `services/ai-engine/` |
-| Docs | Architecture, API, setup, data audit | `docs/` |
+| Assistant model | Qwen3 8B via Ollama (any OpenAI-compatible server) | `docs/AI-ASSISTANT.md` |
+| Docs | Architecture, API, setup, data audit, assistant model | `docs/` |
 
 ---
 
@@ -109,6 +110,27 @@ Tests for both flows:
 cd apps/api
 php artisan test --filter AuthRecoveryTest
 ```
+
+---
+
+## The Academic Assistant's model
+
+The assistant answers any question, and cites the student's own documents when
+they contain the answer. It runs **Qwen3 8B locally through Ollama** — no API
+key, nothing leaves the machine:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup\install-qwen-ollama.ps1
+```
+
+That installs Ollama, pulls `qwen3:8b` (~5 GB; `-Model qwen3:4b` is faster on a
+laptop) and checks it answers. `apps/api/.env` already points at it, and the
+static demo calls the same endpoint from the browser.
+
+Without a model running nothing breaks: document questions are still answered by
+the built-in extractive engine, and the assistant says that general questions
+need the model. Full detail, hosted-provider settings and tests:
+[`docs/AI-ASSISTANT.md`](docs/AI-ASSISTANT.md).
 
 ---
 

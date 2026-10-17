@@ -107,6 +107,28 @@ php artisan acadealert:last-code student@acadealert.lk
 Configure a real `MAIL_MAILER` (SMTP) and nothing is logged — the code only
 reaches the mailbox, exactly as in production.
 
+### POST `/assistant/chat`
+
+🔒 Asks the Academic Assistant. `conversation_id` continues an existing thread.
+
+```json
+{ "message": "What is the attendance requirement?", "conversation_id": 12 }
+```
+
+`201` → `{ "conversation": {...}, "question": {...}, "answer": {...} }`
+
+`answer.meta.method` says where the answer came from:
+
+| `method` | Meaning |
+| -------- | ------- |
+| `llm` | Answered from the student's documents, with `[n]` citations in `answer.content` and the matching entries in `answer.sources`. |
+| `llm-general` | Answered from the model's own knowledge (nothing relevant in the documents). `answer.content` ends with a line saying so. |
+| `extractive` | No model reachable; sentences quoted from the documents by the built-in engine. |
+| `none` | Nothing found in the documents and no model available. |
+
+The model (Qwen3 8B through Ollama by default) and its settings are documented
+in [`AI-ASSISTANT.md`](AI-ASSISTANT.md).
+
 ### POST `/logout` 🔒
 
 Deletes the **current** token only (other devices stay signed in).

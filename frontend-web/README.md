@@ -27,6 +27,22 @@ code appears on screen in a box labelled **Demo mailbox** — that box is the on
 difference between the two. Accounts live in `localStorage`, so clearing site
 data resets them to just the demo student.
 
+### Academic Assistant
+
+`assistant.html` answers through **Qwen3 8B running locally in Ollama**, called
+straight from the browser (`assets/js/llm.js`) and streamed into the chat:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ..\scripts\setup\install-qwen-ollama.ps1
+```
+
+A chip above the chat shows `qwen3:8b · local` while the model is answering. A
+strong match against the five indexed demo documents is answered *with a
+citation*; anything else is answered from the model's own knowledge and
+labelled as such. With no model running, the chat falls back to the
+hand-written demo answers and says what to start. See
+[`../docs/AI-ASSISTANT.md`](../docs/AI-ASSISTANT.md).
+
 Full instructions: [`../docs/SETUP-WEB.md`](../docs/SETUP-WEB.md)
 
 ---
