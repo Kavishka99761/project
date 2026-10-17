@@ -2,35 +2,50 @@
 
 namespace App\Http\Controllers\Api\V1\Platform;
 
+use App\Enums\AuthCodePurpose;
 use App\Enums\ModuleKey;
 use App\Enums\NotificationType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\ForgotPasswordRequest;
 use App\Http\Requests\Platform\LoginRequest;
 use App\Http\Requests\Platform\RegisterRequest;
+use App\Http\Requests\Platform\ResendVerificationRequest;
 use App\Http\Requests\Platform\ResetPasswordRequest;
+use App\Http\Requests\Platform\VerifyEmailRequest;
 use App\Http\Resources\Platform\UserResource;
+use App\Mail\EmailVerificationCodeMail;
+use App\Mail\PasswordChangedMail;
+use App\Mail\PasswordResetCodeMail;
 use App\Models\User;
 use App\Models\UserSetting;
 use App\Services\Firebase\FirebaseService;
+use App\Services\Platform\AuthCodeService;
 use App\Services\Platform\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Common Platform Layer — authentication: register, login, logout and
- * password recovery. Sanctum personal access tokens (one per device) with an
- * expiry; failed logins are throttled and recorded in the audit trail.
+ * Common Platform Layer — authentication: register, login, logout, email
+ * verification and password recovery. Sanctum personal access tokens (one per
+ * device) with an expiry; failed logins are throttled and recorded in the
+ * audit trail.
+ *
+ * Both recovery flows behave the way a deployed service does: a 6-digit code
+ * is emailed to the address, no secret is ever returned in an API response,
+ * and the endpoints answer identically whether or not the account exists.
  */
 class AuthController extends Controller
 {
     public function __construct(
         private readonly FirebaseService $firebase,
         private readonly NotificationService $notifications,
+        private readonly AuthCodeService $codes,
     ) {}
 
     public function register(RegisterRequest $request): JsonResponse
@@ -46,11 +61,14 @@ class AuthController extends Controller
 
         activity()->asUser($user->id)->action('auth.registered')->describe("Created account {$user->email}")->on($user);
         $this->notifications->send($user, ModuleKey::Platform, 'Welcome to AcadeAlert, '.Str::before($user->name, ' ').'!',
-            'Start by adding your modules, then upload lecture notes, academic documents and assignments.',
+            'Confirm your email address, then add your modules and upload your first lecture notes.',
             NotificationType::Success, '/modules', 'stars');
         $this->firebase->mirrorProfile($user);
+        $this->sendVerificationCode($user);
 
-        return response()->json($this->tokenPayload($user, $request), 201);
+        // The account works straight away; the client nudges the student to
+        // confirm the address, which is what unlocks reminder mail and recovery.
+        return response()->json($this->tokenPayload($user, $request) + ['email_verification_sent' => true], 201);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -88,51 +106,158 @@ class AuthController extends Controller
     }
 
     /**
+     * Step 1 of "forgot password": email a 6-digit code to the address.
+     *
      * Always answers the same way so the endpoint cannot be used to discover
-     * registered emails. The token is emailed (logged locally with
-     * MAIL_MAILER=log) and also returned while APP_DEBUG is on for demos.
+     * registered emails, and never returns the code itself — the only way to
+     * continue is to read the mailbox.
      */
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
         $email = $request->validated('email');
-        $payload = ['message' => 'If an account exists for that email, a reset link has been sent.'];
         $user = User::where('email', $email)->first();
 
         if ($user) {
-            $token = Str::random(64);
-            DB::table('password_reset_tokens')->updateOrInsert(['email' => $email], ['token' => Hash::make($token), 'created_at' => now()]);
-            $link = rtrim(config('app.frontend_url'), '/').'/reset-password?token='.$token.'&email='.urlencode($email);
-            logger()->info("AcadeAlert password reset link for {$email}: {$link}");
-            activity()->asUser($user->id)->action('auth.password_reset_requested')->describe('Requested a password reset link');
+            $code = $this->codes->issue(AuthCodePurpose::PasswordReset, $email);
+            $minutes = AuthCodePurpose::PasswordReset->minutes();
+            $link = $this->frontend('/reset-password?email='.urlencode($email).'&code='.$code);
 
-            if (config('app.debug')) {
-                $payload['dev_reset_link'] = $link;
-            }
+            $this->mail($email, new PasswordResetCodeMail($user, $code, $link, $minutes));
+            $this->noteCodeInLog(AuthCodePurpose::PasswordReset, $email, $code);
+            activity()->asUser($user->id)->action('auth.password_reset_requested')
+                ->describe('Requested a password reset code')->on($user);
         }
 
-        return response()->json($payload);
+        return response()->json([
+            'message' => 'If an account exists for that email, we have sent a 6-digit reset code. It expires in '
+                .AuthCodePurpose::PasswordReset->minutes().' minutes.',
+        ]);
     }
 
+    /**
+     * Step 2 of "forgot password": the code proves the mailbox is yours, so a
+     * new password can be set. Every other device is signed out and the owner
+     * is told by email that the password changed.
+     */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $row = DB::table('password_reset_tokens')->where('email', $request->validated('email'))->first();
+        $email = $request->validated('email');
+        $user = User::where('email', $email)->first();
+        $status = $user
+            ? $this->codes->consume(AuthCodePurpose::PasswordReset, $email, $request->validated('code'))
+            : AuthCodeService::MISSING;
 
-        if (! $row || ! Hash::check($request->validated('token'), $row->token)) {
-            throw ValidationException::withMessages(['token' => 'This password reset link is invalid.']);
-        }
-        if (now()->diffInMinutes($row->created_at, true) > 60) {
-            DB::table('password_reset_tokens')->where('email', $row->email)->delete();
-            throw ValidationException::withMessages(['token' => 'This reset link has expired. Please request a new one.']);
+        if ($status !== AuthCodeService::OK) {
+            if ($user) {
+                activity()->asUser($user->id)->action('auth.password_reset_failed')
+                    ->describe('Entered an incorrect password reset code')->with(['status' => $status]);
+            }
+
+            throw ValidationException::withMessages([
+                'code' => $this->codes->message($status, AuthCodePurpose::PasswordReset),
+            ]);
         }
 
-        $user = User::where('email', $row->email)->firstOrFail();
         $user->update(['password' => $request->validated('password')]);
         $user->tokens()->delete();
-        DB::table('password_reset_tokens')->where('email', $row->email)->delete();
 
         activity()->asUser($user->id)->action('auth.password_reset')->describe('Reset the account password')->on($user);
+        $this->mail($email, new PasswordChangedMail($user, now()->format('j M Y, H:i'), $request->ip()));
 
         return response()->json(['message' => 'Your password has been reset. Please sign in with the new password.']);
+    }
+
+    /**
+     * Confirm an email address with the code sent at registration. Public, so
+     * the link in the email works on any device, and it signs nobody in by
+     * itself — the code only proves the address.
+     */
+    public function verifyEmail(VerifyEmailRequest $request): JsonResponse
+    {
+        $email = $request->validated('email');
+        $user = User::where('email', $email)->first();
+
+        if ($user && $user->email_verified_at) {
+            return response()->json(['message' => 'That email address is already confirmed.', 'already_verified' => true]);
+        }
+
+        $status = $user
+            ? $this->codes->consume(AuthCodePurpose::EmailVerification, $email, $request->validated('code'))
+            : AuthCodeService::MISSING;
+
+        if ($status !== AuthCodeService::OK) {
+            throw ValidationException::withMessages([
+                'code' => $this->codes->message($status, AuthCodePurpose::EmailVerification),
+            ]);
+        }
+
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        activity()->asUser($user->id)->action('auth.email_verified')->describe('Confirmed the email address')->on($user);
+        $this->notifications->send($user, ModuleKey::Platform, 'Email address confirmed',
+            'Deadline reminders and weekly summaries will now reach '.$user->email.'.',
+            NotificationType::Success, '/settings', 'envelope-check');
+        $this->firebase->mirrorProfile($user);
+
+        return response()->json([
+            'message' => 'Thanks — your email address is confirmed.',
+            'user' => UserResource::make($user->load('settings')),
+        ]);
+    }
+
+    /** Send the verification code again (same generic answer for any address). */
+    public function resendVerification(ResendVerificationRequest $request): JsonResponse
+    {
+        $user = User::where('email', $request->validated('email'))->first();
+
+        if ($user && ! $user->email_verified_at) {
+            $this->sendVerificationCode($user);
+        }
+
+        return response()->json([
+            'message' => 'If that address needs confirming, a new code is on its way.',
+        ]);
+    }
+
+    /** Issue + email a verification code for a freshly registered account. */
+    private function sendVerificationCode(User $user): void
+    {
+        $code = $this->codes->issue(AuthCodePurpose::EmailVerification, $user->email);
+        $link = $this->frontend('/verify-email?email='.urlencode($user->email).'&code='.$code);
+
+        $this->mail($user->email, new EmailVerificationCodeMail($user, $code, $link));
+        $this->noteCodeInLog(AuthCodePurpose::EmailVerification, $user->email, $code);
+    }
+
+    /**
+     * Send mail without letting a mail problem break the request: a student
+     * whose SMTP server is down still gets their account, and the failure is
+     * written to the log instead of a 500.
+     */
+    private function mail(string $email, Mailable $mailable): void
+    {
+        try {
+            Mail::to($email)->send($mailable);
+        } catch (\Throwable $e) {
+            logger()->error('AcadeAlert could not send '.$mailable::class.' to '.$email.': '.$e->getMessage());
+        }
+    }
+
+    /**
+     * With MAIL_MAILER=log there is no mailbox to open, so the code is written
+     * to the log next to the message itself — `php artisan acadealert:last-code`
+     * prints it. With a real mailer configured nothing extra is logged.
+     */
+    private function noteCodeInLog(AuthCodePurpose $purpose, string $email, string $code): void
+    {
+        if (config('mail.default') === 'log') {
+            logger()->info("AcadeAlert {$purpose->value} code for {$email}: {$code}");
+        }
+    }
+
+    private function frontend(string $path): string
+    {
+        return rtrim((string) config('app.frontend_url'), '/').$path;
     }
 
     /** @return array<string, mixed> */

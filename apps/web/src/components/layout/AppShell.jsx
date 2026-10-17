@@ -8,6 +8,7 @@ import { PageTransition } from '@/components/layout/PageTransition';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Topbar } from '@/components/layout/Topbar';
 import { routeMeta } from '@/config/navigation';
+import { VerifyEmailBanner } from '@/features/auth/components/VerifyEmailBanner';
 import { useHotkey } from '@/hooks/useHotkey';
 
 /** Authenticated application frame. */
@@ -55,6 +56,7 @@ export function AppShell() {
 
       <div className={`main-column ${collapsed ? 'sidebar-collapsed' : ''}`}>
         <Topbar onMenu={() => setMobileOpen(true)} onSearch={() => setPaletteOpen(true)} />
+        <VerifyEmailBanner />
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={transitionKey} accent={accent}>
             {outlet}

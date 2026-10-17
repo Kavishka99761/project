@@ -12,16 +12,22 @@ curl http://localhost:8000/api/health
 
 ## Authentication
 
-Three routes are public. Everything else requires
+Six routes are public (register, login, the two password-recovery steps and
+the two email-verification steps). Everything else requires
 `Authorization: Bearer <token>`.
 
 ### POST `/register`
 
 ```json
-{ "name": "Ayesha Perera", "email": "a@b.lk", "password": "secret", "password_confirmation": "secret", "program": "BSc SE" }
+{ "name": "Ayesha Perera", "email": "a@b.lk", "password": "Study2026x", "password_confirmation": "Study2026x", "program": "BSc SE" }
 ```
 
-`201` → `{ "user": {...}, "token": "1|abc..." }`
+`201` → `{ "user": {...}, "token": "1|abc...", "email_verification_sent": true }`
+
+The account is usable immediately and `user.email_verified` is `false` until the
+6-digit code emailed on registration is confirmed through `/verify-email`.
+Password rule: at least 8 characters with letters and numbers.
+`422` → `errors.email` when the address is already registered.
 
 ### POST `/login`
 
@@ -34,29 +40,72 @@ Three routes are public. Everything else requires
 
 ### POST `/forgot-password`
 
-Public. Always returns a generic `200` message whether or not the email is
-registered (prevents account enumeration).
+Public. Emails a **6-digit code** to the address and always returns the same
+generic `200`, whether or not the email is registered (prevents account
+enumeration). Nothing secret is in the response: the code only exists in the
+mailbox, which is what proves the account belongs to the person asking.
 
 ```json
 { "email": "student@acadealert.lk" }
 ```
 
-`200` → `{ "message": "If an account exists for that email, a reset link has been sent." }`
+`200` → `{ "message": "If an account exists for that email, we have sent a 6-digit reset code. It expires in 15 minutes." }`
 
-When `APP_DEBUG=true` (local/demo, no SMTP configured) the response also
-includes `dev_reset_token` so the reset flow can be exercised end-to-end
-without a mail server. In production this token is only ever logged/emailed.
+Protections: 3 sends per minute per IP and 5 per 10 minutes per address
+(`throttle:password-reset`), the code is stored only as a bcrypt hash, it
+expires after 15 minutes, and it is destroyed after 5 wrong guesses.
 
 ### POST `/reset-password`
 
-Public. Consumes the token from `/forgot-password` (valid 60 minutes, single use).
+Public. Consumes the code from `/forgot-password` (single use). Signs out every
+other device and emails the owner that the password changed.
 
 ```json
-{ "email": "student@acadealert.lk", "token": "<64-char token>", "password": "newpass", "password_confirmation": "newpass" }
+{ "email": "student@acadealert.lk", "code": "481902", "password": "Newpass2026", "password_confirmation": "Newpass2026" }
 ```
 
-`200` → `{ "message": "Your password has been reset. Please sign in." }`
-`422` → invalid/expired token.
+`200` → `{ "message": "Your password has been reset. Please sign in with the new password." }`
+`422` → `errors.code` is one of: not correct / expired / too many incorrect codes /
+no code pending. Spaces and dashes in `code` are ignored, so a pasted "481 902" works.
+
+The current password is never returned by any endpoint — only a bcrypt hash of
+it is stored, so there is nothing to read back.
+
+### POST `/verify-email`
+
+Public. Confirms the address with the 6-digit code emailed at registration.
+The link in that email opens the web client at `/verify-email?email=…&code=…`,
+so it works on any device without being signed in.
+
+```json
+{ "email": "student@acadealert.lk", "code": "204517" }
+```
+
+`200` → `{ "message": "Thanks — your email address is confirmed.", "user": {...} }`
+`200` → `{ "message": "That email address is already confirmed.", "already_verified": true }`
+`422` → `errors.code` as for `/reset-password`. Codes last 24 hours.
+
+### POST `/resend-verification`
+
+Public, same throttle as `/forgot-password`, same generic answer.
+
+```json
+{ "email": "student@acadealert.lk" }
+```
+
+`200` → `{ "message": "If that address needs confirming, a new code is on its way." }`
+
+### Seeing the codes in local development
+
+With `MAIL_MAILER=log` (the default) the rendered email goes to
+`storage/logs/laravel-<date>.log`, and the code is logged next to it:
+
+```bash
+php artisan acadealert:last-code student@acadealert.lk
+```
+
+Configure a real `MAIL_MAILER` (SMTP) and nothing is logged — the code only
+reaches the mailbox, exactly as in production.
 
 ### POST `/logout` 🔒
 
@@ -525,6 +574,7 @@ Invoke-RestMethod -Uri http://localhost:8000/api/dashboard -Headers $h
 | GET | `/health` | public |
 | POST | `/register`, `/login` | public |
 | POST | `/forgot-password`, `/reset-password` | public |
+| POST | `/verify-email`, `/resend-verification` | public |
 | POST | `/logout` · GET/PUT `/me` | Common |
 | POST | `/me/password` · POST/DELETE `/me/avatar` | Common |
 | GET | `/dashboard`, `/calendar` | Common |

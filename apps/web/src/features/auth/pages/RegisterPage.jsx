@@ -35,8 +35,10 @@ export default function RegisterPage() {
     setErrors({});
     try {
       await register(form);
-      toast.success('Account created', 'Start by adding your modules.');
-      navigate('/modules?welcome=1', { replace: true });
+      // Real sign-up flow: the account exists and is signed in, but the address
+      // is unconfirmed until the emailed code is entered.
+      toast.success('Account created', `We emailed a confirmation code to ${form.email}.`);
+      navigate(`/verify-email?email=${encodeURIComponent(form.email)}`, { replace: true });
     } catch (error) {
       setErrors(fieldErrors(error));
       if (error.response?.status !== 422) toast.error('Registration failed', errorMessage(error));
@@ -72,6 +74,11 @@ export default function RegisterPage() {
         <button type="submit" className="btn btn-primary btn-lg w-100 mt-2" disabled={busy}>
           {busy && <span className="spinner-border spinner-border-sm me-2" />}Create account
         </button>
+        <p className="small text-3 mt-3 mb-0">
+          <i className="bi bi-envelope-check me-1" aria-hidden="true" />
+          We will email a 6-digit code to confirm the address. Deadline reminders and password recovery use it,
+          so make sure you can open that mailbox.
+        </p>
       </form>
     </AuthLayout>
   );

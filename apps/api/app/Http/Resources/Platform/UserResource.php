@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'academic_year' => $this->academic_year,
             'phone' => $this->phone,
             'bio' => $this->bio,
+            'email_verified' => $this->email_verified_at !== null,
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
             'last_login_at' => $this->last_login_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),

@@ -73,6 +73,43 @@ npm start
 
 **Demo login:** `student@acadealert.lk` / `password`
 
+### Accounts, email verification and password recovery
+
+Sign-up and recovery work as they do on a deployed service — everything goes
+through the mailbox, and no API response ever contains a code:
+
+1. **Create account** → the account is usable at once, `email_verified` is
+   `false`, and a 6-digit code is emailed. The app opens `/verify-email`, and
+   an "unconfirmed address" reminder stays in the app until it is entered.
+2. **Forgot password** (panel inside the login form, or `/forgot-password`) →
+   enter the username, a 6-digit code is emailed, then the code plus a new
+   password signs you straight in. The existing password is never shown: only a
+   bcrypt hash of it is stored, so there is nothing to read back.
+
+Codes are stored hashed, expire (15 minutes for a reset, 24 hours for
+verification), die after 5 wrong guesses, and are limited to 5 sends per
+10 minutes per address. Resetting a password signs out every other device and
+emails the owner that it changed.
+
+By default `MAIL_MAILER=log`, so no mail server is needed — the message is
+written to `apps/api/storage/logs/` and the code can be read with:
+
+```bash
+cd apps/api
+php artisan acadealert:last-code student@acadealert.lk
+```
+
+To receive the emails for real, set `MAIL_MAILER=smtp` and the `MAIL_*`
+credentials in `apps/api/.env` (Gmail App Password, Mailtrap or Mailpit — see
+the comments in `.env.example`). Nothing is logged once a real mailer is set.
+
+Tests for both flows:
+
+```bash
+cd apps/api
+php artisan test --filter AuthRecoveryTest
+```
+
 ---
 
 ## Audit trail

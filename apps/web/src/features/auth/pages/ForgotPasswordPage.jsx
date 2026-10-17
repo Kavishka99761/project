@@ -1,51 +1,40 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { InlineForgotPassword } from '@/features/auth/components/InlineForgotPassword';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { api, errorMessage } from '@/lib/api';
+import { errorMessage } from '@/lib/api';
 
+/**
+ * Common Platform Layer — the standalone password recovery page, for the
+ * "Forgot password?" link in an email or a bookmark. It runs exactly the same
+ * steps as the panel inside the login form: email → emailed code → new
+ * password → signed in.
+ */
 export default function ForgotPasswordPage() {
+  const { login } = useAuth();
   const toast = useToast();
-  const [email, setEmail] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const submit = async (event) => {
-    event.preventDefault();
-    setBusy(true);
+  const signIn = async ({ email, password }) => {
     try {
-      const { data } = await api.post('/auth/forgot-password', { email });
-      setResult(data);
+      const user = await login({ email, password, remember: true });
+      toast.success(`Welcome back, ${user.name.split(' ')[0]}!`, 'Your new password is in use.');
+      navigate(location.state?.from?.pathname ?? '/dashboard', { replace: true });
     } catch (error) {
-      toast.error('Could not send the link', errorMessage(error));
-    } finally {
-      setBusy(false);
+      toast.error('Password changed, but sign-in failed', errorMessage(error));
+      navigate('/login', { replace: true });
     }
   };
 
   return (
-    <AuthLayout title="Reset your password" subtitle="We'll send a secure link to your email address." footer={<Link to="/login" className="fw-bold"><i className="bi bi-arrow-left me-1" />Back to sign in</Link>}>
-      {result ? (
-        <div className="text-center">
-          <div className="fs-1 mb-2" style={{ color: 'var(--es-good)' }}><i className="bi bi-envelope-check" aria-hidden="true" /></div>
-          <p className="text-2">{result.message}</p>
-          {result.dev_reset_link && (
-            <div className="glass p-3 text-start small">
-              <div className="fw-bold mb-1"><i className="bi bi-tools me-1" />Development mode</div>
-              No mail server is configured, so the link is shown here (it is also written to the API log):
-              <a href={result.dev_reset_link.replace(/^https?:\/\/[^/]+/, '')} className="d-block mt-2 text-break fw-semibold">Open the reset link</a>
-            </div>
-          )}
-        </div>
-      ) : (
-        <form onSubmit={submit}>
-          <label className="form-label" htmlFor="email">Email</label>
-          <input id="email" type="email" className="form-control form-control-lg mb-3" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
-          <button type="submit" className="btn btn-primary btn-lg w-100" disabled={busy}>
-            {busy && <span className="spinner-border spinner-border-sm me-2" />}Send reset link
-          </button>
-        </form>
-      )}
+    <AuthLayout
+      title="Reset your password"
+      subtitle="We email a 6-digit code to prove the account is yours."
+      footer={<Link to="/login" className="fw-bold"><i className="bi bi-arrow-left me-1" />Back to sign in</Link>}
+    >
+      <InlineForgotPassword onReset={signIn} />
     </AuthLayout>
   );
 }

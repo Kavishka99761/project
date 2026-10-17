@@ -50,7 +50,9 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:login')->name('register');
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:password-reset')->name('forgot');
-    Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password-reset')->name('reset');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:code-check')->name('reset');
+    Route::post('verify-email', [AuthController::class, 'verifyEmail'])->middleware('throttle:code-check')->name('verify');
+    Route::post('resend-verification', [AuthController::class, 'resendVerification'])->middleware('throttle:password-reset')->name('verify.resend');
 });
 
 /* ---------------------------- Authenticated ---------------------------- */

@@ -30,6 +30,7 @@ class DataAuditInstaller
     public const EXCLUDED_TABLES = [
         self::LOG_TABLE, 'activity_logs', 'migrations', 'cache', 'cache_locks',
         'jobs', 'job_batches', 'failed_jobs', 'sessions', 'password_reset_tokens',
+        'email_verification_codes',
     ];
 
     /** Secrets are stored as a short fingerprint: a change is visible, the value is not. */

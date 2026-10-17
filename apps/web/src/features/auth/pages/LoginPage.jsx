@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/layout/AuthLayout';
+import { InlineForgotPassword } from '@/features/auth/components/InlineForgotPassword';
 import { DEMO_CREDENTIALS } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
@@ -14,12 +16,14 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '', remember: true });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [recovering, setRecovering] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const submit = async (event, credentials = form) => {
     event?.preventDefault();
     setBusy(true);
     setErrors({});
+    setRecovering(false);
     try {
       const user = await login({ email: credentials.email, password: credentials.password, remember: credentials.remember });
       toast.success(`Welcome back, ${user.name.split(' ')[0]}!`, 'Your workspace is ready.');
@@ -30,6 +34,13 @@ export default function LoginPage() {
     } finally {
       setBusy(false);
     }
+  };
+
+  /** A finished inline reset hands back the new credentials: sign straight in. */
+  const afterReset = (credentials) => {
+    const next = { ...credentials, remember: true };
+    setForm(next);
+    submit(null, next);
   };
 
   const useDemo = () => {
@@ -53,7 +64,9 @@ export default function LoginPage() {
         <div className="mb-3">
           <div className="d-flex justify-content-between">
             <label className="form-label" htmlFor="password">Password</label>
-            <Link to="/forgot-password" className="small fw-semibold">Forgot password?</Link>
+            <button type="button" className="btn btn-link btn-sm p-0 small fw-semibold text-decoration-none" onClick={() => setRecovering((open) => !open)} aria-expanded={recovering} aria-controls="inline-forgot-password">
+              Forgot password?
+            </button>
           </div>
           <div className="position-relative">
             <input id="password" type={showPassword ? 'text' : 'password'} className={`form-control form-control-lg pe-5 ${errors.password ? 'is-invalid' : ''}`} autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
@@ -70,14 +83,27 @@ export default function LoginPage() {
           {busy ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-box-arrow-in-right me-2" aria-hidden="true" />}
           Sign in
         </button>
-        <div className="d-flex align-items-center gap-3 my-3 text-3 small">
-          <hr className="flex-grow-1" /> or <hr className="flex-grow-1" />
-        </div>
-        <button type="button" className="btn btn-glass w-100" onClick={useDemo} disabled={busy}>
-          <i className="bi bi-stars me-2" aria-hidden="true" />Explore the demo student account
-        </button>
-        <p className="text-center text-3 small mt-3 mb-0">Demo: {DEMO_CREDENTIALS.email} / {DEMO_CREDENTIALS.password}</p>
       </form>
+
+      {/* Password recovery lives outside the sign-in form: it has forms of its own. */}
+      <AnimatePresence initial={false}>
+        {recovering && (
+          <InlineForgotPassword
+            key="inline-forgot-password"
+            initialEmail={form.email}
+            onCancel={() => setRecovering(false)}
+            onReset={afterReset}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="d-flex align-items-center gap-3 my-3 text-3 small">
+        <hr className="flex-grow-1" /> or <hr className="flex-grow-1" />
+      </div>
+      <button type="button" className="btn btn-glass w-100" onClick={useDemo} disabled={busy}>
+        <i className="bi bi-stars me-2" aria-hidden="true" />Explore the demo student account
+      </button>
+      <p className="text-center text-3 small mt-3 mb-0">Demo: {DEMO_CREDENTIALS.email} / {DEMO_CREDENTIALS.password}</p>
     </AuthLayout>
   );
 }

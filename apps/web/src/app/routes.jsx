@@ -10,6 +10,7 @@ const LoginPage = lazy(() => import('@/features/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/features/auth/pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('@/features/auth/pages/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('@/features/auth/pages/VerifyEmailPage'));
 
 const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage'));
 
@@ -90,6 +91,8 @@ export function AppRoutes() {
         <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
         <Route path="/forgot-password" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        {/* Reachable both ways: straight after registering (signed in) and from the email link. */}
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         <Route element={<RequireAuth><RealtimeProvider><AppShell /></RealtimeProvider></RequireAuth>}>
           <Route path="/dashboard" element={page(DashboardPage)} />
