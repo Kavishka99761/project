@@ -40,9 +40,11 @@
     <div class="es-auth-panel">
       <div class="es-auth-card es-fade-in">
         <button class="es-icon-btn mb-3" id="themeBtn" title="Toggle theme"><i class="bi bi-moon-stars" id="themeIcon"></i></button>
-        <h2 style="font-weight:800">Welcome back</h2>
-        <p class="text-muted-es mb-4">Sign in to access your four dashboards.</p>
+        <h2 style="font-weight:800" id="authTitle">Welcome back</h2>
+        <p class="text-muted-es mb-4" id="authSubtitle">Sign in to access your four dashboards.</p>
 
+        <!-- ========================= Sign in ========================= -->
+        <div id="panelLogin">
         <form id="loginForm" novalidate>
           <div class="mb-3">
             <label class="form-label fw-semibold small">Email address</label>
@@ -62,7 +64,7 @@
               <input class="form-check-input" type="checkbox" id="remember" checked />
               <label class="form-check-label text-muted-es" for="remember">Remember me</label>
             </div>
-            <a href="#" style="color:var(--es-primary);font-weight:600">Forgot password?</a>
+            <a href="#" id="forgotLink" style="color:var(--es-primary);font-weight:600">Forgot password?</a>
           </div>
           <button type="submit" class="btn-es-primary w-100"><i class="bi bi-box-arrow-in-right me-2"></i>Sign in</button>
         </form>
@@ -70,43 +72,355 @@
         <div class="es-divider"></div>
         <p class="text-center text-muted-es small mb-2">New to AcadeAlert? <a href="#" id="signupLink" style="color:var(--es-primary);font-weight:600">Create an account</a></p>
         <div class="text-center small text-muted-es" style="font-size:.78rem">
-          Demo: any email + password (min 6 chars)
+          Demo account: student@acadealert.lk / password
         </div>
+        </div><!-- /panelLogin -->
+
+        <!-- ==================== Forgot password ====================== -->
+        <div id="panelForgot" style="display:none">
+          <!-- Step 1: which account? -->
+          <form id="forgotForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="fpEmail">Username (email)</label>
+              <input type="email" class="es-input" id="fpEmail" placeholder="student@acadealert.lk" required />
+              <div class="invalid-feedback small" id="fpEmailErr">Enter a valid email address.</div>
+            </div>
+            <p class="text-muted-es small">
+              <i class="bi bi-shield-lock me-1"></i>
+              Your existing password cannot be shown &mdash; only a one-way hash of it is stored, so nobody can
+              read it back. The 6-digit code lets you set a new one.
+            </p>
+            <button type="submit" class="btn-es-primary w-100"><i class="bi bi-envelope-arrow-up me-2"></i>Send me a reset code</button>
+          </form>
+
+          <!-- Step 2: code + new password -->
+          <form id="resetForm" novalidate style="display:none">
+            <div id="fpMailbox"></div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="fpCode">6-digit code</label>
+              <input type="text" class="es-input text-center fw-bold" id="fpCode" inputmode="numeric" maxlength="6"
+                     placeholder="000000" style="letter-spacing:.6em" required />
+              <div class="invalid-feedback small" id="fpCodeErr">Enter the 6 digits from the code.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="fpPassword">New password</label>
+              <input type="password" class="es-input" id="fpPassword" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+              <div class="invalid-feedback small" id="fpPasswordErr">At least 8 characters, with letters and numbers.</div>
+              <div class="text-muted-es" style="font-size:.78rem;margin-top:6px">At least 8 characters, including letters and numbers.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="fpConfirm">Confirm new password</label>
+              <input type="password" class="es-input" id="fpConfirm" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+              <div class="invalid-feedback small" id="fpConfirmErr">The two passwords do not match.</div>
+            </div>
+            <button type="submit" class="btn-es-primary w-100"><i class="bi bi-check2-circle me-2"></i>Set new password &amp; sign in</button>
+            <div class="d-flex justify-content-between align-items-center mt-3 small">
+              <a href="#" id="fpBack" style="color:var(--es-primary);font-weight:600"><i class="bi bi-arrow-left me-1"></i>Different email</a>
+              <a href="#" id="fpResend" style="color:var(--es-primary);font-weight:600">Resend code</a>
+            </div>
+          </form>
+
+          <div class="es-divider"></div>
+          <p class="text-center small mb-0"><a href="#" class="auth-to-login" style="color:var(--es-primary);font-weight:600">Back to sign in</a></p>
+        </div><!-- /panelForgot -->
+
+        <!-- ====================== Create account ===================== -->
+        <div id="panelSignup" style="display:none">
+          <!-- Step 1: the details -->
+          <form id="signupForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suName">Full name</label>
+              <input type="text" class="es-input" id="suName" placeholder="Ayesha Perera" required />
+              <div class="invalid-feedback small" id="suNameErr">Enter your full name.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suEmail">University email</label>
+              <input type="email" class="es-input" id="suEmail" placeholder="you@university.lk" required />
+              <div class="invalid-feedback small" id="suEmailErr">Enter a valid email address.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suProgram">Degree programme <span class="text-muted-es fw-normal">(optional)</span></label>
+              <input type="text" class="es-input" id="suProgram" placeholder="BSc (Hons) in Software Engineering" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suPassword">Password</label>
+              <input type="password" class="es-input" id="suPassword" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+              <div class="invalid-feedback small" id="suPasswordErr">At least 8 characters, with letters and numbers.</div>
+              <div id="suStrength" class="mt-2" style="display:none">
+                <div style="height:6px;border-radius:999px;background:var(--es-border);overflow:hidden">
+                  <div id="suStrengthBar" style="height:100%;width:0;transition:all .25s"></div>
+                </div>
+                <div class="text-muted-es" style="font-size:.78rem;margin-top:5px">Strength: <strong id="suStrengthLabel">&mdash;</strong> &middot; 8+ characters with letters and numbers</div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suConfirm">Confirm password</label>
+              <input type="password" class="es-input" id="suConfirm" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+              <div class="invalid-feedback small" id="suConfirmErr">The two passwords do not match.</div>
+            </div>
+            <button type="submit" class="btn-es-primary w-100"><i class="bi bi-person-plus me-2"></i>Create account</button>
+            <p class="text-muted-es small mt-3 mb-0">
+              <i class="bi bi-envelope-check me-1"></i>
+              We send a 6-digit code to confirm the address &mdash; deadline reminders and password recovery use it.
+            </p>
+          </form>
+
+          <!-- Step 2: confirm the address -->
+          <form id="confirmForm" novalidate style="display:none">
+            <div id="suMailbox"></div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" for="suCode">6-digit code</label>
+              <input type="text" class="es-input text-center fw-bold" id="suCode" inputmode="numeric" maxlength="6"
+                     placeholder="000000" style="letter-spacing:.6em" required />
+              <div class="invalid-feedback small" id="suCodeErr">Enter the 6 digits from the code.</div>
+            </div>
+            <button type="submit" class="btn-es-primary w-100"><i class="bi bi-patch-check me-2"></i>Confirm my email</button>
+            <div class="text-center mt-3 small">
+              <a href="#" id="suResend" style="color:var(--es-primary);font-weight:600">Send a new code</a>
+            </div>
+          </form>
+
+          <div class="es-divider"></div>
+          <p class="text-center small mb-0">Already registered? <a href="#" class="auth-to-login" style="color:var(--es-primary);font-weight:600">Sign in</a></p>
+        </div><!-- /panelSignup -->
       </div>
+
     </div>
   </div>
 
   <script src="assets/js/mock-data.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/auth.js"></script>
   <script>
     ES.initTheme();
-    // If already signed in, skip straight to the overview.
-    if (ES.isAuthed()) { /* allow re-login; do not force redirect */ }
+    // Hashing is async, so keep the promise: every flow waits for the seeded
+    // demo account to exist before it looks an account up.
+    var ready = ES.auth.seed();
 
     document.getElementById("themeBtn").addEventListener("click", ES.toggleTheme);
 
-    const pw = document.getElementById("password");
-    document.getElementById("togglePw").addEventListener("click", function () {
-      const show = pw.type === "password";
-      pw.type = show ? "text" : "password";
-      this.className = show ? "bi bi-eye-slash" : "bi bi-eye";
+    var $ = function (id) { return document.getElementById(id); };
+
+    /* ---------------- panel switching ---------------- */
+    var PANELS = {
+      login: { el: "panelLogin", title: "Welcome back", subtitle: "Sign in to access your four dashboards." },
+      forgot: { el: "panelForgot", title: "Forgot your password?", subtitle: "We send a 6-digit code to prove the account is yours." },
+      signup: { el: "panelSignup", title: "Create your account", subtitle: "One workspace for notes, focus, questions and deadlines." }
+    };
+
+    function show(name) {
+      Object.keys(PANELS).forEach(function (key) {
+        $(PANELS[key].el).style.display = key === name ? "" : "none";
+      });
+      $("authTitle").textContent = PANELS[name].title;
+      $("authSubtitle").textContent = PANELS[name].subtitle;
+      // Always re-enter a flow at its first step.
+      if (name === "forgot") { $("forgotForm").style.display = ""; $("resetForm").style.display = "none"; }
+      if (name === "signup") { $("signupForm").style.display = ""; $("confirmForm").style.display = "none"; }
+    }
+
+    $("forgotLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      $("fpEmail").value = $("email").value.trim();
+      show("forgot");
+      $("fpEmail").focus();
+    });
+    $("signupLink").addEventListener("click", function (e) { e.preventDefault(); show("signup"); $("suName").focus(); });
+    Array.prototype.forEach.call(document.querySelectorAll(".auth-to-login"), function (link) {
+      link.addEventListener("click", function (e) { e.preventDefault(); show("login"); });
     });
 
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const email = document.getElementById("email");
-      let ok = true;
-      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-      email.classList.toggle("is-invalid", !validEmail);
-      if (!validEmail) ok = false;
-      const pwOk = pw.value.length >= 6;
-      pw.classList.toggle("is-invalid", !pwOk);
-      if (!pwOk) ok = false;
-      if (!ok) return;
+    /* ---------------- shared field helpers ---------------- */
+    function fail(inputId, errId, message) {
+      $(inputId).classList.add("is-invalid");
+      if (errId && message) $(errId).textContent = message;
+      return false;
+    }
+    function clear() {
+      Array.prototype.forEach.call(document.querySelectorAll(".es-input.is-invalid"), function (el) {
+        el.classList.remove("is-invalid");
+      });
+    }
+    function digitsOnly(input) {
+      input.addEventListener("input", function () { this.value = this.value.replace(/\D/g, "").slice(0, 6); });
+    }
+    digitsOnly($("fpCode"));
+    digitsOnly($("suCode"));
 
-      ES.login(email.value.trim());
-      // In production: POST to `${ES.API_BASE}/auth/login` for a Sanctum token.
-      window.location.href = "dashboard.html";
+    /* The real app emails the code. This build has no server, so it is shown
+       here instead — clearly marked, so nobody mistakes it for the live flow. */
+    function mailbox(hostId, email, code, purpose) {
+      $(hostId).innerHTML =
+        '<div class="es-card mb-3" style="padding:14px 16px;border-left:3px solid var(--es-primary)">' +
+          '<div class="small fw-bold mb-1"><i class="bi bi-inbox me-1"></i>Demo mailbox</div>' +
+          '<div class="text-muted-es" style="font-size:.78rem">' +
+            'The live version emails this ' + purpose + ' code to <strong>' + email + '</strong>. ' +
+            'This static demo has no mail server, so it appears here.' +
+          '</div>' +
+          '<div style="font-size:1.6rem;font-weight:800;letter-spacing:.35em;margin-top:8px">' + code + '</div>' +
+          '<div class="text-muted-es" style="font-size:.74rem">Valid for ' + ES.auth.codeMinutes + ' minutes · single use · 5 wrong tries cancels it</div>' +
+        '</div>';
+    }
+
+    function enterApp(account, message) {
+      ES.auth.startSession(account);
+      ES.toast(message, "success");
+      setTimeout(function () { window.location.href = "dashboard.html"; }, 700);
+    }
+
+    /* ---------------- sign in ---------------- */
+    var pw = $("password");
+    $("togglePw").addEventListener("click", function () {
+      var showing = pw.type === "password";
+      pw.type = showing ? "text" : "password";
+      this.className = showing ? "bi bi-eye-slash" : "bi bi-eye";
+    });
+
+    $("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      clear();
+      var email = $("email");
+      if (!ES.auth.emailValid(email.value)) return fail("email", "emailErr", "Please enter a valid email.");
+      if (!pw.value) return fail("password", "pwErr", "Enter your password.");
+
+      ready.then(function () { return ES.auth.signIn(email.value, pw.value); }).then(function (result) {
+        if (result.error) {
+          fail("password", "pwErr", result.error);
+          return;
+        }
+        if (!result.account.verified) {
+          // Unconfirmed address: finish that step first, exactly like the live app.
+          ES.auth.issueCode("verify", result.account.email).then(function (code) {
+            show("signup");
+            $("signupForm").style.display = "none";
+            $("confirmForm").style.display = "";
+            mailbox("suMailbox", result.account.email, code, "confirmation");
+            $("confirmForm").dataset.email = result.account.email;
+            ES.toast("Confirm your email address to continue", "warn");
+          });
+          return;
+        }
+        enterApp(result.account, "Welcome back, " + result.account.name.split(" ")[0] + "!");
+      });
+    });
+
+    /* ---------------- forgot password ---------------- */
+    $("forgotForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      clear();
+      var email = $("fpEmail").value.trim();
+      if (!ES.auth.emailValid(email)) return fail("fpEmail", "fpEmailErr", "Enter a valid email address.");
+
+      ready.then(function () { return ES.auth.requestReset(email); }).then(function (result) {
+        // The same answer either way — a real API never reveals whether an
+        // address is registered.
+        $("forgotForm").style.display = "none";
+        $("resetForm").style.display = "";
+        $("resetForm").dataset.email = email;
+        if (result.code) {
+          mailbox("fpMailbox", email, result.code, "reset");
+        } else {
+          $("fpMailbox").innerHTML =
+            '<div class="es-card mb-3" style="padding:14px 16px;border-left:3px solid var(--es-warning)">' +
+              '<div class="small fw-bold mb-1"><i class="bi bi-envelope me-1"></i>Check your inbox</div>' +
+              '<div class="text-muted-es" style="font-size:.78rem">If an account exists for ' + email +
+              ', a 6-digit code has been sent. No code is shown here because this demo has no account for that address.</div>' +
+            '</div>';
+        }
+        $("fpCode").focus();
+      });
+    });
+
+    $("fpResend").addEventListener("click", function (e) {
+      e.preventDefault();
+      var email = $("resetForm").dataset.email;
+      ES.auth.requestReset(email).then(function (result) {
+        if (result.code) mailbox("fpMailbox", email, result.code, "reset");
+        ES.toast("A new code was sent", "info");
+      });
+    });
+
+    $("fpBack").addEventListener("click", function (e) {
+      e.preventDefault();
+      clear();
+      $("resetForm").style.display = "none";
+      $("forgotForm").style.display = "";
+      $("fpEmail").focus();
+    });
+
+    $("resetForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      clear();
+      var email = $("resetForm").dataset.email;
+      if ($("fpCode").value.length !== 6) return fail("fpCode", "fpCodeErr", "Enter the 6 digits from the code.");
+
+      ES.auth.resetPassword(email, $("fpCode").value, $("fpPassword").value, $("fpConfirm").value).then(function (result) {
+        if (result.error) {
+          if (result.field === "confirm") return fail("fpConfirm", "fpConfirmErr", result.error);
+          if (result.field === "password") return fail("fpPassword", "fpPasswordErr", result.error);
+          return fail("fpCode", "fpCodeErr", result.error);
+        }
+        enterApp(result.account, "Password updated — you are signed in");
+      });
+    });
+
+    /* ---------------- create account ---------------- */
+    $("suPassword").addEventListener("input", function () {
+      var value = this.value;
+      $("suStrength").style.display = value ? "" : "none";
+      if (!value) return;
+      var strength = ES.auth.strength(value);
+      $("suStrengthBar").style.width = (strength.score / 5 * 100) + "%";
+      $("suStrengthBar").style.background = strength.color;
+      $("suStrengthLabel").textContent = strength.label;
+    });
+
+    $("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      clear();
+      var details = {
+        name: $("suName").value,
+        email: $("suEmail").value,
+        program: $("suProgram").value,
+        password: $("suPassword").value,
+        password_confirmation: $("suConfirm").value
+      };
+
+      ES.auth.register(details).then(function (result) {
+        if (result.error) {
+          if (result.field === "name") return fail("suName", "suNameErr", result.error);
+          if (result.field === "email") return fail("suEmail", "suEmailErr", result.error);
+          if (result.field === "confirm") return fail("suConfirm", "suConfirmErr", result.error);
+          return fail("suPassword", "suPasswordErr", result.error);
+        }
+        $("signupForm").style.display = "none";
+        $("confirmForm").style.display = "";
+        $("confirmForm").dataset.email = details.email.trim().toLowerCase();
+        $("authSubtitle").textContent = "Enter the 6-digit code we sent to " + details.email.trim() + ".";
+        mailbox("suMailbox", details.email.trim(), result.code, "confirmation");
+        $("suCode").focus();
+      });
+    });
+
+    $("suResend").addEventListener("click", function (e) {
+      e.preventDefault();
+      var email = $("confirmForm").dataset.email;
+      ES.auth.issueCode("verify", email).then(function (code) {
+        mailbox("suMailbox", email, code, "confirmation");
+        ES.toast("A new code was sent", "info");
+      });
+    });
+
+    $("confirmForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      clear();
+      var email = $("confirmForm").dataset.email;
+      if ($("suCode").value.length !== 6) return fail("suCode", "suCodeErr", "Enter the 6 digits from the code.");
+
+      ES.auth.verify(email, $("suCode").value).then(function (result) {
+        if (result.error) return fail("suCode", "suCodeErr", result.error);
+        enterApp(result.account, "Email confirmed — welcome to AcadeAlert!");
+      });
     });
   </script>
 </body>

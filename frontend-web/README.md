@@ -8,9 +8,24 @@ node serve.js
 # → http://localhost:5173
 ```
 
-Sign in with **student@acadealert.lk** / **password** (any credentials work — the app
-runs on bundled mock data, so every module dashboard is fully interactive with no
-backend).
+Sign in with **student@acadealert.lk** / **password**. Every module dashboard then
+runs on bundled mock data, with no backend.
+
+### Accounts in this demo
+
+The login page carries working **Forgot password?** and **Create an account**
+flows (`assets/js/auth.js`), following the same rules as the real API:
+
+- passwords are kept only as a hash — your existing one is never shown anywhere;
+- both flows issue a **6-digit code**: valid 15 minutes, single use, cancelled
+  after 5 wrong guesses;
+- a new account starts unconfirmed and is confirmed with that code;
+- "forgot password" answers the same whether or not the address is registered.
+
+The live client (`apps/web`) emails the code. This build has no server, so the
+code appears on screen in a box labelled **Demo mailbox** — that box is the only
+difference between the two. Accounts live in `localStorage`, so clearing site
+data resets them to just the demo student.
 
 Full instructions: [`../docs/SETUP-WEB.md`](../docs/SETUP-WEB.md)
 
